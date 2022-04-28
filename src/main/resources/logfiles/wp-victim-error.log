@@ -1,0 +1,1 @@
+[Wed Apr 20 21:29:46.736224 2022] [proxy_fcgi:error] [pid 16196] [client 192.168.62.175:52238] AH01068: Got bogus version 115, referer: http://teste.cs.tuiasi.ro:18667/wp-admin/admin.php?page=secure-copy-content-protection
