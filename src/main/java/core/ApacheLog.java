@@ -4,14 +4,17 @@ import core.constants.SQLKeywordsAndWeight;
 import core.constants.SQLSpecialCharacters;
 import nl.basjes.parse.core.Field;
 
+import javax.swing.text.html.Option;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 // de facut remove/completat fieldurile necesare
 public class ApacheLog {
 
+    public String LogClass = "";
     private String clientIP;
 
     private String timeOfRequest;
@@ -61,7 +64,17 @@ public class ApacheLog {
 
     public int findOccurrencesNumberOfWhiteSpaces()
     {
-        return 2*findOccurrencesNumber(" ");
+        if (originalUriQuery.length() == 0)
+            return 0;
+
+        int numberOfSpecialCharacters = 0;
+
+        Pattern sequenceRegexPattern = Pattern.compile(" ");
+
+        Matcher matcher = sequenceRegexPattern.matcher(originalUriQuery);
+        numberOfSpecialCharacters += matcher.results().count();
+
+        return numberOfSpecialCharacters;
     }
 
     public String getOriginalUriQuery() {
@@ -154,4 +167,13 @@ public class ApacheLog {
         userAgent = value;
     }
 
+
+    public String getHttpMethod() {
+        return httpMethod;
+    }
+
+    public int getPayloadLength()
+    {
+        return Optional.of(originalUriQuery.length()).orElse(0);
+    }
 }

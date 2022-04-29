@@ -1,9 +1,13 @@
 package core.clusterer;
 
+import org.apache.commons.logging.Log;
 import org.apache.commons.math3.ml.clustering.Clusterable;
 
 public class ApacheLogPoint implements Clusterable {
 
+    public String LogClass = "";
+
+    public double[] Score;
     private double lengthOfPayload;
 
     private double numberOfSQLKeywordsInPayload;
@@ -14,21 +18,33 @@ public class ApacheLogPoint implements Clusterable {
 
     private double numberOfSpecialCharactersInPayload;
 
-    public ApacheLogPoint(double lengthOfPayload, double numberOfSQLKeywordsInPayload, double weightedSumOfSQLKeywordsInPayload, double numberOfSpacesInPayload, double numberOfSpecialCharactersInPayload) {
+    public ApacheLogPoint(double aLength,
+                          double aNumberOfSQLKeywords,
+                          double aWeightedSumOfSQLKeywords,
+                          double aNumberOfSpaces,
+                          double aNumberOfSpecialCharacters,
+                          String aLogClass,
+                          double[] aScore) {
 
-        this.lengthOfPayload = lengthOfPayload;
-        this.numberOfSQLKeywordsInPayload = numberOfSQLKeywordsInPayload;
-        this.weightedSumOfSQLKeywordsInPayload = weightedSumOfSQLKeywordsInPayload;
-        this.numberOfSpacesInPayload = numberOfSpacesInPayload;
-        this.numberOfSpecialCharactersInPayload = numberOfSpecialCharactersInPayload;
+        lengthOfPayload = aLength;
+        numberOfSQLKeywordsInPayload = aNumberOfSQLKeywords;
+        weightedSumOfSQLKeywordsInPayload = aWeightedSumOfSQLKeywords;
+        numberOfSpacesInPayload = aNumberOfSpaces;
+        numberOfSpecialCharactersInPayload = aNumberOfSpecialCharacters;
+        LogClass = aLogClass;
+
+        Score = new double[2];
+        Score[0] = aScore[0];
+        Score[1] = aScore[1];
     }
 
     @Override
     public double[] getPoint() {
-        return new double[]{lengthOfPayload,
-                            numberOfSQLKeywordsInPayload,
-                            weightedSumOfSQLKeywordsInPayload,
-                            numberOfSpacesInPayload,
-                            numberOfSpecialCharactersInPayload};
+//        return new double[]{lengthOfPayload,
+//                            numberOfSQLKeywordsInPayload,
+//                            weightedSumOfSQLKeywordsInPayload,
+//                            numberOfSpacesInPayload,
+//                            numberOfSpecialCharactersInPayload};
+        return Score;
     }
 }

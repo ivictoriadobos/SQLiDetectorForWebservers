@@ -44,9 +44,17 @@ public class ApacheLogProvider {
                      new InputStreamReader(getFileFromResourceAsStream(pathToFile), StandardCharsets.UTF_8);
              BufferedReader reader = new BufferedReader(streamReader)) {
 
+            String LogClass = "";
             String line;
             while ((line = reader.readLine()) != null) {
+                if(line.length() == 1)
+                {
+                    LogClass = line;
+                    System.out.println("Found class " + line);
+                    continue;
+                }
                 ApacheLog apacheLog = apacheLogParser.parse(line);
+                apacheLog.LogClass = LogClass;
                 apacheLogs.add(apacheLog);
             }
 
