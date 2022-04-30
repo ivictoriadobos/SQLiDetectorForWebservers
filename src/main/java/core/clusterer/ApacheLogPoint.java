@@ -7,6 +7,7 @@ public class ApacheLogPoint implements Clusterable {
 
     public String LogClass = "";
 
+    public ApacheLog apacheLog;
     public double[] Score;
     private double lengthOfPayload;
 
@@ -24,7 +25,8 @@ public class ApacheLogPoint implements Clusterable {
                           double aNumberOfSpaces,
                           double aNumberOfSpecialCharacters,
                           String aLogClass,
-                          double[] aScore) {
+                          double[] aScore,
+                          ApacheLog anApacheLog) {
 
         lengthOfPayload = aLength;
         numberOfSQLKeywordsInPayload = aNumberOfSQLKeywords;
@@ -36,6 +38,8 @@ public class ApacheLogPoint implements Clusterable {
         Score = new double[2];
         Score[0] = aScore[0];
         Score[1] = aScore[1];
+
+        apacheLog = anApacheLog;
     }
 
     @Override

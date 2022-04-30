@@ -1,7 +1,5 @@
 package core.clusterer;
 
-import core.ApacheLog;
-
 public class LogScoreCalculator {
 
     public static double[] calculate(ApacheLog apacheLog)
@@ -19,10 +17,11 @@ public class LogScoreCalculator {
             score[1] = 0;
         }
 
-//        score[0] += apacheLog.findOccurrencesNumberOfSpecialCharacters()*2;
-//        score[0] += apacheLog.findOccurrencesNumberOfSQLKeywords();
+        score[0] += apacheLog.findOccurrencesNumberOfSpecialCharacters();
+        score[0] += 1.5*apacheLog.findOccurrencesNumberOfSQLKeywords();
         score[0] += apacheLog.findOccurrencesNumberOfWhiteSpaces();
-//        score[0] += apacheLog.getPayloadLength();
+//        score[0] += Math.sqrt(apacheLog.getPayloadLength());
+
 
         return score;
     }

@@ -1,7 +1,7 @@
 package core.transformers;
 
 import core.clusterer.ApacheLogPoint;
-import core.ApacheLog;
+import core.clusterer.ApacheLog;
 import core.clusterer.LogScoreCalculator;
 
 import java.util.Optional;
@@ -16,6 +16,7 @@ public class LogToClusterPointMapper {
                 apacheLog.findOccurrencesNumberOfWhiteSpaces(),
                 apacheLog.findOccurrencesNumberOfSpecialCharacters(),
                 apacheLog.LogClass,
-                LogScoreCalculator.calculate(apacheLog));
+                LogScoreCalculator.calculate(apacheLog),
+                apacheLog);
     }
 }

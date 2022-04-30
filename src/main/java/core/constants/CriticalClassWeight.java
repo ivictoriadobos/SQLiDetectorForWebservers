@@ -10,4 +10,6 @@ public class CriticalClassWeight {
         put("LOW", 10.0);
     }};
 
+
+
 }

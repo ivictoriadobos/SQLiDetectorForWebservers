@@ -1,10 +1,9 @@
 package application.io.logprovider;
 
 import application.Main;
-import core.ApacheLog;
+import core.clusterer.ApacheLog;
 import core.exceptions.ClusterPhaseRuntimeException;
 import core.exceptions.ExceptionCauseEnum;
-import core.transformers.UrlDecoder;
 import nl.basjes.parse.core.Parser;
 import nl.basjes.parse.core.exceptions.DissectionFailure;
 import nl.basjes.parse.core.exceptions.InvalidDissectorException;
@@ -40,23 +39,29 @@ public class ApacheLogProvider {
 
         List<ApacheLog> apacheLogs = new ArrayList<>();
 
-        try (InputStreamReader streamReader =
-                     new InputStreamReader(getFileFromResourceAsStream(pathToFile), StandardCharsets.UTF_8);
+        try (InputStreamReader streamReader = new InputStreamReader(getFileFromResourceAsStream(pathToFile),
+                                                                    StandardCharsets.UTF_8);
+
              BufferedReader reader = new BufferedReader(streamReader)) {
 
-            String LogClass = "";
-            String line;
-            while ((line = reader.readLine()) != null) {
-                if(line.length() == 1)
+                String LogClass = "";
+                String line;
+                int i = 1;
+                while ((line = reader.readLine()) != null)
                 {
-                    LogClass = line;
-                    System.out.println("Found class " + line);
-                    continue;
+                    if(line.length() == 1) // temporary if structure, useful for vizualization
+                    {
+                        LogClass = line;
+                        System.out.println("Found class " + line); // 1 - attack logs, 2 - legit access logs
+                        continue;
+                    }
+
+                    ApacheLog apacheLog = apacheLogParser.parse(line);
+                    apacheLog.LogClass = LogClass;
+                    apacheLog.logIndexInFile= i;
+                    apacheLogs.add(apacheLog);
+                    i++;
                 }
-                ApacheLog apacheLog = apacheLogParser.parse(line);
-                apacheLog.LogClass = LogClass;
-                apacheLogs.add(apacheLog);
-            }
 
         } catch (IOException | DissectionFailure | InvalidDissectorException | MissingDissectorsException e) {
             e.printStackTrace();
