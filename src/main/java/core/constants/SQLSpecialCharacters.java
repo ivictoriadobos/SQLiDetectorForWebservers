@@ -1,33 +1,39 @@
 package core.constants;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SQLSpecialCharacters {
-    public static List<String> specialCharacters = new ArrayList<>()
+    public static Map<String, WeightClassEnum> specialCharacters = new HashMap<>()
     {{
-        add("(\\)|')+\\+(CHAR|\\(|')+"); // +
-        add("(\\)|\\w|;)+--(\\s)*"); // --
-        add("(\\(|\\)|\\s|\\d{3,})\\*(\\s|\\(|\\)|\\d)+"); // *
-        add("/");
-        add("(\\d{3,}|'|\\\"|!|\\))=(\\d{3,}|\\s|CAST|'|CONVERT|\\\"|CONCAT|\\()"); // =
-        add("<>");
-        add("\\)");
-        add("\\(");
-        add("'");
-        add("\"");
-//        add(",");
-        add(";");
+        put("(\\)|\\w|;)+--(\\s)*", WeightClassEnum.CRITICAL); // --
+        put("(\\)|\\\")+>(\\(|\\)|\\d{2,})", WeightClassEnum.CRITICAL); // >
+        put("(\\d{3,}|'|\\\"|!|\\))=(\\d{3,}|\\s|CAST|'|CONVERT|\\\"|CONCAT|\\()", WeightClassEnum.CRITICAL); // =
+
+        put("(\\)|')+\\+(CHAR|\\(|')+", WeightClassEnum.HIGH); // +
+        put("(\\)|\\d{3,}),(\\(|CHAR|CHR|CONCAT|\\d{1}x)", WeightClassEnum.HIGH);// ,
+        put("(\\)|'|\\\");(CREATE|WAITFOR|DECLARE|SET|SELECT|IF|EXEC|\\()", WeightClassEnum.HIGH);
+
+        put("(\\(|\\)|\\s|\\d{3,})\\*(\\s|\\(|\\)|\\d)+", WeightClassEnum.MEDIUM); // *
+
+        put("'", WeightClassEnum.EXTRA_LOW);
+        put("\\\"", WeightClassEnum.EXTRA_LOW); // " -> \\ \" -> "
     }};
 
-    public static List<String> specialCharactersForUserAgent = new ArrayList<>()
+    public static Map<String, WeightClassEnum> specialCharactersForUserAgent = new HashMap<>()
     {{
-        add("(\\)|')+\\+(CHAR|\\(|')+");
-        add("(\\(|[a-zA-Z]|\\d{3,}|'|;|\\))--(\\s|$)*");//--
-        add("\\*");
-        add("(\\d{3,}|'|\\\"|!|\\))=(\\d{3,}|\\s|CAST|'|CONVERT|\\\"|CONCAT|\\()");
-        add("<>");
-        add("'");
-        add("\"");
+        put("(\\(|[a-zA-Z]|\\d{3,}|'|;|\\))--(\\s|$)*", WeightClassEnum.CRITICAL); //--
+        put("(\\d{3,}|'|\\\"|!|\\))=(\\d{3,}|\\s|CAST|'|CONVERT|\\\"|CONCAT|\\()", WeightClassEnum.CRITICAL);// =
+        put("(\\)|\\\")+>(\\(|\\)|\\d{2,})", WeightClassEnum.CRITICAL);
+
+        put("(\\)|')+\\+(CHAR|\\(|')+", WeightClassEnum.HIGH); // +
+        put("(\\)|\\d{3,}),(\\(|\\s|CHAR|CHR|CONCAT|\\d{1}x)", WeightClassEnum.HIGH);// ,
+
+        put("(\\(|\\)|\\s|\\d{3,})\\*(\\s|\\(|\\)|\\d)+", WeightClassEnum.MEDIUM); // *
+
+        put("'", WeightClassEnum.EXTRA_LOW);
+        put("\\\"", WeightClassEnum.EXTRA_LOW); // " -> \\ \"
     }};
 }

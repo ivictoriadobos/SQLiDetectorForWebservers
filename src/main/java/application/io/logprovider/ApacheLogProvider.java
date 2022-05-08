@@ -10,13 +10,13 @@ import nl.basjes.parse.core.exceptions.InvalidDissectorException;
 import nl.basjes.parse.core.exceptions.MissingDissectorsException;
 import nl.basjes.parse.httpdlog.HttpdLoglineParser;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ApacheLogProvider {
     private final String pathToFile;
@@ -52,9 +52,8 @@ public class ApacheLogProvider {
                     if(line.length() == 1) // temporary if structure, useful for vizualization
                     {
                         LogClass = line;
-                        System.out.println("Found class " + line); // 1 - attack logs, 2 - legit access logs
-                        continue;
-                    }
+                    continue;
+                }
 
                     ApacheLog apacheLog = apacheLogParser.parse(line);
                     apacheLog.LogClass = LogClass;

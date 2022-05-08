@@ -1,6 +1,5 @@
 package core.clusterer;
 
-import org.apache.commons.logging.Log;
 import org.apache.commons.math3.ml.clustering.Clusterable;
 
 public class ApacheLogPoint implements Clusterable {
@@ -17,13 +16,15 @@ public class ApacheLogPoint implements Clusterable {
 
     private double numberOfSpacesInPayload;
 
-    private double numberOfSpecialCharactersInPayload;
+    private double numberOfSpecialCharacters;
+    private double weightedSumOfSpecialCharacters;
 
     public ApacheLogPoint(double aLength,
                           double aNumberOfSQLKeywords,
                           double aWeightedSumOfSQLKeywords,
                           double aNumberOfSpaces,
                           double aNumberOfSpecialCharacters,
+                          double aWeightedSumOfSpecialCharacters,
                           String aLogClass,
                           double[] aScore,
                           ApacheLog anApacheLog) {
@@ -32,7 +33,8 @@ public class ApacheLogPoint implements Clusterable {
         numberOfSQLKeywordsInPayload = aNumberOfSQLKeywords;
         weightedSumOfSQLKeywordsInPayload = aWeightedSumOfSQLKeywords;
         numberOfSpacesInPayload = aNumberOfSpaces;
-        numberOfSpecialCharactersInPayload = aNumberOfSpecialCharacters;
+        numberOfSpecialCharacters = aNumberOfSpecialCharacters;
+        weightedSumOfSpecialCharacters = aWeightedSumOfSpecialCharacters;
         LogClass = aLogClass;
 
         Score = new double[2];
@@ -50,5 +52,10 @@ public class ApacheLogPoint implements Clusterable {
 //                            numberOfSpacesInPayload,
 //                            numberOfSpecialCharactersInPayload};
         return Score;
+    }
+
+    public double getIntermediaryScore()
+    {
+        return weightedSumOfSQLKeywordsInPayload + weightedSumOfSpecialCharacters;
     }
 }

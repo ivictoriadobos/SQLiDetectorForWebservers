@@ -1,7 +1,7 @@
 package core.clusterer;
 import core.constants.SQLKeywordAndWeight;
-import core.constants.SQLKeywordsAndWeight;
 import core.constants.SQLSpecialCharacters;
+import core.constants.WeightClassEnum;
 import core.transformers.UrlDecoder;
 import nl.basjes.parse.core.Field;
 import java.util.HashMap;
@@ -20,7 +20,7 @@ public class ApacheLog {
 
     private String httpMethod;
 
-    private String originalUriQuery;
+    private String originalUriQuery = "";
 
     private Map<String, String> uriParams = new HashMap<>(32);
     private String target;
@@ -29,7 +29,7 @@ public class ApacheLog {
 
     private String statusCode;
 
-    private String userAgent;
+    private String userAgent = "";
 
     private String referer;
 
@@ -46,79 +46,86 @@ public class ApacheLog {
         uriParams.clear();
     }
 
-    private void decode()
+    public double getWeightedSumOfSpecialCharacters()
     {
-        try {
-            originalUriQuery = UrlDecoder.decode(originalUriQuery);
+        double specialCharactersKeywordsScore = 0;
+
+        for (Map.Entry<String, WeightClassEnum> mapEntry : SQLSpecialCharacters.specialCharacters.entrySet()) {
+
+            specialCharactersKeywordsScore+= regexMatchSequenceOverRequestUri(mapEntry.getKey()) * mapEntry.getValue().getValue();
         }
-        catch (Exception e)
-        {
-//            e.printStackTrace();
+
+        for (Map.Entry<String, WeightClassEnum> mapEntry : SQLSpecialCharacters.specialCharactersForUserAgent.entrySet()) {
+
+            specialCharactersKeywordsScore+= regexMatchSequenceOverUserAgent(mapEntry.getKey()) * mapEntry.getValue().getValue();
         }
+
+        return specialCharactersKeywordsScore;
     }
 
-    public int findOccurrencesNumberOfSpecialCharacters()
+    public double getWeightedSumOfSQLKeywords()
     {
+        double sqlKeywordsScore = 0;
 
-        int specialCharactersInRequestUri = SQLSpecialCharacters.specialCharacters.stream()
-                                            .mapToInt(this::findOccurrencesNumberInRequestUri)
-                                            .sum();
+        for (Map.Entry<String, WeightClassEnum> mapEntry : SQLKeywordAndWeight.keywordsAndWeight.entrySet()) {
 
-        int specialCharactersInUserAgent = SQLSpecialCharacters.specialCharactersForUserAgent.stream()
-                                            .mapToInt(this::findOccurrencesNumberInUserAgent)
-                                            .sum();
+            sqlKeywordsScore+= regexMatchSequenceOverRequestUri(mapEntry.getKey()) * mapEntry.getValue().getValue()
+                                + regexMatchSequenceOverUserAgent(mapEntry.getKey()) * mapEntry.getValue().getValue();
+        }
 
-        return specialCharactersInRequestUri + specialCharactersInUserAgent;
+        return sqlKeywordsScore;
     }
 
-    public int findOccurrencesNumberOfSQLKeywords()
+    public int getNumberOfSpecialCharacters()
     {
+        return SQLSpecialCharacters.specialCharacters.keySet().stream()
+                .mapToInt(this::regexMatchSequenceOverRequestUri)
+                .sum() +
 
-        int sqlKeywordsNumberInRequestUri = SQLKeywordAndWeight.keywordsAndWeight.keySet().stream()
-                                            .mapToInt(this::findOccurrencesNumberInRequestUri)
-                                            .sum();
-
-        int sqlKeywordsNumberInUserAgent = SQLKeywordAndWeight.keywordsAndWeight.keySet().stream()
-                                            .mapToInt(this::findOccurrencesNumberInUserAgent)
-                                            .sum();
-
-        return sqlKeywordsNumberInRequestUri + sqlKeywordsNumberInUserAgent;
+                SQLSpecialCharacters.specialCharactersForUserAgent.keySet().stream()
+                .mapToInt(this::regexMatchSequenceOverUserAgent)
+                .sum();
     }
 
-    public String getOriginalUriQuery() {
-        return originalUriQuery;
-    }
+    public int getNumberOfSQLKeywords()
+    {
+        int noOfSQLKeywordsContained = 0;
 
-    private int findOccurrencesNumberInRequestUri(final String sequence)
+        noOfSQLKeywordsContained = SQLKeywordAndWeight.keywordsAndWeight.keySet().stream()
+                                        .mapToInt(this::regexMatchSequenceOverRequestUri)
+                                        .sum()
+                                    + SQLKeywordAndWeight.keywordsAndWeight.keySet().stream()
+                                        .mapToInt(this::regexMatchSequenceOverUserAgent)
+                                        .sum();
+
+        return noOfSQLKeywordsContained;
+    }
+    private int regexMatchSequenceOverRequestUri(final String sequence)
     {
         if (originalUriQuery.length() == 0)
             return 0;
-
-        int numberOfSpecialCharacters = 0;
 
         Pattern sequenceRegexPattern = Pattern.compile(sequence);
 
         Matcher matcher = sequenceRegexPattern.matcher(originalUriQuery);
 
-        numberOfSpecialCharacters += matcher.results().count();
-
-        return numberOfSpecialCharacters;
+        return (int) matcher.results().count();
     }
 
-    private int findOccurrencesNumberInUserAgent(final String sequence)
+    private int regexMatchSequenceOverUserAgent(final String sequence)
     {
+        if(userAgent == null)
+        {
+            userAgent = new String("");
+            System.out.println("wut");
+        }
         if (userAgent.length() == 0)
             return 0;
 
-        int numberOfSpecialCharacters = 0;
-
         Pattern sequenceRegexPattern = Pattern.compile(sequence);
-
         Matcher matcher = sequenceRegexPattern.matcher(userAgent);
 
-        numberOfSpecialCharacters += matcher.results().count();
-
-        return numberOfSpecialCharacters;
+        return (int) matcher.results().count();
     }
 
     public int findOccurrencesNumberOfWhiteSpaces()
@@ -128,7 +135,7 @@ public class ApacheLog {
 
         int numberOfSpecialCharacters = 0;
 
-        Pattern sequenceRegexPattern = Pattern.compile(" ");
+        Pattern sequenceRegexPattern = Pattern.compile("\\s");
 
         Matcher matcher = sequenceRegexPattern.matcher(originalUriQuery);
 
@@ -159,10 +166,6 @@ public class ApacheLog {
     public void setOriginalUri(final String value)
     {
         originalUri = value;
-
-        decode();
-
-        originalUri = originalUri.toLowerCase();
     }
 
     @Field("HTTP.PATH:request.firstline.original.uri.path")
@@ -175,6 +178,10 @@ public class ApacheLog {
     public void setOriginalUriQuery(final String value)
     {
         originalUriQuery = value;
+
+        originalUriQuery = originalUriQuery.toUpperCase();
+
+        decode();
     }
 
     @Field("IP:connection.client.host")
@@ -207,6 +214,9 @@ public class ApacheLog {
         userAgent = value;
     }
 
+    public String getOriginalUriQuery() {
+        return originalUriQuery;
+    }
 
     public String getHttpMethod() {
         return httpMethod;
@@ -215,5 +225,16 @@ public class ApacheLog {
     public int getPayloadLength()
     {
         return Optional.of(originalUriQuery.length()).orElse(0);
+    }
+
+    private void decode()
+    {
+        try {
+            originalUriQuery = UrlDecoder.decode(originalUriQuery);
+        }
+        catch (Exception e)
+        {
+//            e.printStackTrace(); weird parse exception we get even though there's no problem at parsing the respective log
+        }
     }
 }

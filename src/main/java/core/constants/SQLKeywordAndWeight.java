@@ -21,26 +21,22 @@ public class SQLKeywordAndWeight {
         put("(\\s+|\\(|;|'|^)+\\bSELECT(\\s|\\()", WeightClassEnum.HIGH); // SELECT
         put("(\\(|\\s|,|^|;)+UPDATEXML\\(", WeightClassEnum.HIGH); // UPDATEXML
 
-        put("(\\s+|\\(|;|'|^)+\\bDELETE\\b", WeightClassEnum.MEDIUM); // DE;ETE
-        put("INSERT\\s+", WeightClassEnum.MEDIUM);
-        put("COUNT[\\s\\(]+", WeightClassEnum.MEDIUM);
-        put("GROUP BY", WeightClassEnum.MEDIUM);
-        put("ORDER BY[\\s\\(]+", WeightClassEnum.MEDIUM);
-        put("DROP\\s+(table|database)", WeightClassEnum.MEDIUM);
-        put("CASE", WeightClassEnum.MEDIUM);
-        put("SLEEP\\s+", WeightClassEnum.MEDIUM);
+        put("(\\b|\\(|\\s|N)CHAR(\\b|\\()", WeightClassEnum.MEDIUM); // CHAR
+        put("(\\(|\\s)IFNULL(\\()", WeightClassEnum.MEDIUM); // IFNULL
+        put("(\\s+|\\(|;|'|^)+\\bDELETE\\b", WeightClassEnum.MEDIUM); // DELETE
+        put("\\bINSERT\\s+", WeightClassEnum.MEDIUM);
+        put("\\sCOUNT\\(", WeightClassEnum.MEDIUM);
+        put("\\bDROP\\s+(table|database)", WeightClassEnum.MEDIUM);
+        put("(\\(|\\s)SLEEP(\\()", WeightClassEnum.MEDIUM);
+        put("(\\s|\\()AND\\s+(\\(|'|\\\"|\\d{2,}=)", WeightClassEnum.MEDIUM);
+        put("(\\s|\\()OR\\s+(\\(|'|\\\"|\\d{2,})", WeightClassEnum.MEDIUM);
+        put("\\(CASE\\s", WeightClassEnum.MEDIUM);
+        put("(\\(|\\|\\|)CHR\\(", WeightClassEnum.MEDIUM); // CHR
 
-        put("LIKE\\s+", WeightClassEnum.MEDIUM);
-        put("\\s+WHERE EXISTS\\s+", WeightClassEnum.MEDIUM);
-        put("WHERE", WeightClassEnum.MEDIUM);
-        put("\\s+INTO\\s+", WeightClassEnum.LOW);
-        put("BEGIN\\s+", WeightClassEnum.LOW);
-        put("\\s+FROM\\s+", WeightClassEnum.EXTRA_LOW);
-        put("END", WeightClassEnum.EXTRA_LOW);
-        put("ELSE", WeightClassEnum.EXTRA_LOW);
-        put("THEN", WeightClassEnum.EXTRA_LOW);
-        put("\\s+AS\\s+", WeightClassEnum.EXTRA_LOW);
-        put("\\s+OR\\s+", WeightClassEnum.EXTRA_LOW);
-        put("\\s+AND\\s+", WeightClassEnum.EXTRA_LOW);
+        put("\\sGROUP BY\\s", WeightClassEnum.LOW);
+        put("\\bLIKE\\(", WeightClassEnum.LOW);
+        put("\\bEND(|\\)|\\s|--)", WeightClassEnum.LOW);
+        put("\\bWHERE\\b", WeightClassEnum.LOW);
+        put("(\\s)FROM(\\s|\\()", WeightClassEnum.LOW);
     }};
 }
