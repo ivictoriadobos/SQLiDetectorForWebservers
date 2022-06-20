@@ -1,6 +1,6 @@
-package core.clusterer.distancescore.function.branches;
+package core.clusterer.acceslogtype.distancescore.function.branches;
 
-import core.clusterer.distancescore.function.contracts.IManipulatorFunction;
+import core.clusterer.acceslogtype.distancescore.function.contracts.IManipulatorFunction;
 
 public class SqrtManipulatorFunction implements IManipulatorFunction {
     private double lowerThreshold;

@@ -1,4 +1,4 @@
-package core.clusterer.distancescore.function.contracts;
+package core.clusterer.acceslogtype.distancescore.function.contracts;
 
 public interface IManipulatorFunction {
 

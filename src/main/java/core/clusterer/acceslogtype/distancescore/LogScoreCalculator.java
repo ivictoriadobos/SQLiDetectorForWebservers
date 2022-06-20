@@ -1,8 +1,8 @@
-package core.clusterer.distancescore;
+package core.clusterer.acceslogtype.distancescore;
 
-import core.clusterer.ApacheLog;
-import core.clusterer.distancescore.function.ScoreManipulatorFunction;
-import core.clusterer.distancescore.function.branches.*;
+import core.clusterer.acceslogtype.ApacheLog;
+import core.clusterer.acceslogtype.distancescore.function.ScoreManipulatorFunction;
+import core.clusterer.acceslogtype.distancescore.function.branches.*;
 
 import java.util.ArrayList;
 
@@ -25,7 +25,7 @@ public class LogScoreCalculator {
 
 
         score[0] = scoreManipulatorFunction.calculateScore(apacheLog.getWeightedSumOfSQLKeywords() + apacheLog.getWeightedSumOfSpecialCharacters());
-        System.out.println("Raw Score: " + apacheLog.getWeightedSumOfSQLKeywords() + apacheLog.getWeightedSumOfSQLKeywords() + "\t Normalized value: " + score[0]);
+        System.out.println("Raw Score: " + apacheLog.getWeightedSumOfSQLKeywords() + apacheLog.getWeightedSumOfSpecialCharacters() + "\t Normalized value: " + score[0]);
 
         if (apacheLog.getHttpMethod().equalsIgnoreCase("POST"))
         {

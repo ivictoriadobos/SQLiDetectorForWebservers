@@ -1,6 +1,6 @@
-package core.clusterer.distancescore.function;
+package core.clusterer.acceslogtype.distancescore.function;
 
-import core.clusterer.distancescore.function.contracts.IManipulatorFunction;
+import core.clusterer.acceslogtype.distancescore.function.contracts.IManipulatorFunction;
 
 import java.util.List;
 

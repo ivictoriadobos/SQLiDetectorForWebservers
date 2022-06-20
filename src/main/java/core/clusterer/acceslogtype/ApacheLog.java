@@ -1,4 +1,4 @@
-package core.clusterer;
+package core.clusterer.acceslogtype;
 import core.constants.SQLKeywordAndWeight;
 import core.constants.SQLSpecialCharacters;
 import core.constants.WeightClassEnum;

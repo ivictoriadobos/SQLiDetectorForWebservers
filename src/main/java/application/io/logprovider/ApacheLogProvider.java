@@ -1,7 +1,7 @@
 package application.io.logprovider;
 
 import application.Main;
-import core.clusterer.ApacheLog;
+import core.clusterer.acceslogtype.ApacheLog;
 import core.exceptions.ClusterPhaseRuntimeException;
 import core.exceptions.ExceptionCauseEnum;
 import nl.basjes.parse.core.Parser;
@@ -14,9 +14,6 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class ApacheLogProvider {
     private final String pathToFile;
@@ -85,3 +82,7 @@ public class ApacheLogProvider {
 
     }
  }
+
+
+
+

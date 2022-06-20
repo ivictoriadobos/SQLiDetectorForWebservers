@@ -1,8 +1,8 @@
 package core.transformers;
 
-import core.clusterer.ApacheLogPoint;
-import core.clusterer.ApacheLog;
-import core.clusterer.distancescore.LogScoreCalculator;
+import core.clusterer.acceslogtype.ApacheLogPoint;
+import core.clusterer.acceslogtype.ApacheLog;
+import core.clusterer.acceslogtype.distancescore.LogScoreCalculator;
 
 import java.util.Optional;
 

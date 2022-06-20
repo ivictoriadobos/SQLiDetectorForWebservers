@@ -1,4 +1,4 @@
-package core.clusterer;
+package core.clusterer.acceslogtype;
 
 import org.apache.commons.math3.ml.clustering.Clusterable;
 

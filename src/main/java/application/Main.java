@@ -1,9 +1,14 @@
 package application;
 
+import application.driver.implementations.Driver;
+import application.driver.exceptions.ApplicationException;
+import application.driver.exceptions.ExceptionReasonEnum;
+import application.driver.implementations.services.ConsoleInputServiceImpl;
+import application.driver.implementations.services.ConsoleOutputServiceImpl;
+import application.driver.interfaces.IDriverClass;
 import application.io.logprovider.ApacheLogProvider;
-import core.clusterer.ApacheDistanceMetric;
-import core.clusterer.ApacheLog;
-import core.clusterer.ApacheLogPoint;
+import core.clusterer.acceslogtype.ApacheDistanceMetric;
+import core.clusterer.acceslogtype.ApacheLogPoint;
 import core.transformers.LogToClusterPointMapper;
 import graph.*;
 import org.apache.commons.math3.ml.clustering.Cluster;
@@ -18,8 +23,7 @@ import java.util.stream.Collectors;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-
-        List<ApacheLogPoint> apacheLogPoints = loadLogs();
+/*        List<ApacheLogPoint> apacheLogPoints = loadLogs();
 
         printStatistics(calculateFP_FN_NoOfAttacks(apacheLogPoints));
 
@@ -27,13 +31,12 @@ public class Main {
 
         XYChart branchedFunctionClusteredPointsRepresentation = new XYChart(1200, 1600);
 
-        Map<Integer, String> indexToClusterNameMap = new HashMap<>()
-        {{
-            put(0, "Cereri legitime");
-            put(1, "Cereri care contin un posibil atac");
-            put(2, "Cereri de atac");
-        }};
-
+        // adnotare manuala vs adnotare automata
+        double totalNoOfLegitLogs = (int) apacheLogPoints.stream().filter(apacheLogPoint -> apacheLogPoint.LogClass.equals("1")).count();
+        double totalNoOfAttackLogs = apacheLogPoints.size() - totalNoOfLegitLogs;
+        CategoryChart mysecond = new CategoryChartBuilder().width(800).height(600).title("Analiza calitatii gruparii automate comparativ cu eticheta reala").xAxisTitle("Tipar de acces").yAxisTitle("Numar").theme(Styler.ChartTheme.GGPlot2).build();
+        mysecond.addSeries("Adnotare manuala", new double[]{0, 1}, new double[]{totalNoOfLegitLogs, totalNoOfAttackLogs});
+        double[] noOfLegistvsNoOfAttackWhenClustered = {0,0};
 
         int i = 0;
         int numberOfClusteredPoints = 0;
@@ -41,13 +44,25 @@ public class Main {
         {
 
             List<ApacheLogPoint> points = cluster.getPoints();
+            numberOfClusteredPoints += points.size();
+
+            if( i == 0 || i==1)
+            {
+                List<ApacheLogPoint> prettyHighScoreLegitLogs = cluster.getPoints().stream().filter(apacheLogPoint -> (apacheLogPoint.Score[0] >= 103)).toList();
+
+                noOfLegistvsNoOfAttackWhenClustered[0] += cluster.getPoints().size();
+            }
+            else
+            {
+                List<ApacheLogPoint> lowScoreAttackLogs = cluster.getPoints().stream().filter(apacheLogPoint -> (apacheLogPoint.Score[0] <= 110)).toList();
+                noOfLegistvsNoOfAttackWhenClustered[1] +=cluster.getPoints().size();
+            }
 
             if (points.get(0).Score[1] != 0) {
+                i++;
                 System.out.println("Skipping " + points.size() + " points, no worries");
                 continue;
             }
-            numberOfClusteredPoints += points.size();
-
 
             List<Double> rawScore = new ArrayList<>();
             List<Double> manipulatedScore = new ArrayList<>();
@@ -56,16 +71,33 @@ public class Main {
                 rawScore.add(apacheLogPoint.getIntermediaryScore()+100);
                 manipulatedScore.add(apacheLogPoint.Score[0]);
             });
+
+
             branchedFunctionClusteredPointsRepresentation.addSeries(indexToClusterNameMap.get(i), rawScore, manipulatedScore);
             i++;
         }
+        mysecond.addSeries("Adnotare automata", new double[]{0,1}, noOfLegistvsNoOfAttackWhenClustered);
+        new SwingWrapper<CategoryChart>(mysecond).displayChart();
 
+        branchedFunctionClusteredPointsRepresentation.setXAxisTitle("Suma ponderata numarului dx`e cuvinte SQL/ caractere speciale");
+        branchedFunctionClusteredPointsRepresentation.setYAxisTitle("Valoarea sumei dupa aplicarea functiei de normalizare");
         new SwingWrapper<XYChart>(branchedFunctionClusteredPointsRepresentation).displayChart();
 
 
         System.out.println("Number of unclustered and lost points: " + (apacheLogPoints.size() - numberOfClusteredPoints));
         System.out.println("Clusters found: " + clusters.size());
+ */
+
+        if (args.length == 1 && (Objects.equals(args[0], "--console") || Objects.equals(args[0], "--server"))) {
+            // TODO : switch DI according to command line argument
+            IDriverClass applicationDriver = new Driver(new ConsoleInputServiceImpl(), new ConsoleOutputServiceImpl());
+
+            applicationDriver.start();
+
+        } else throw new ApplicationException(ExceptionReasonEnum.INVALID_ARGUMENTS);
     }
+
+
 
     private static XYChart buildXYChart(XYSeries.XYSeriesRenderStyle chartStyle, List<Double> xSeries, List<Double> ySeries, String seriesName )
     {
@@ -139,8 +171,6 @@ public class Main {
 
         // Create Chart
         CategoryChart chart = new CategoryChartBuilder().width(800).height(600).title("Raw Score and its number of appearences").xAxisTitle("Raw Score").yAxisTitle("Number of appearences").theme(Styler.ChartTheme.GGPlot2).build();
-
-        // Customize Chart
 
         // Series
         chart.addSeries("My category chart",scoreToNumberOfAppearences.keySet().stream().toList(), scoreToNumberOfAppearences.values().stream().toList());
@@ -230,5 +260,12 @@ public class Main {
         add(Color.PINK);
         add(Color.YELLOW);
         add(Color.GREEN);
+    }};
+
+    private static final Map<Integer, String> indexToClusterNameMap = new HashMap<>()
+    {{
+        put(0, "Cereri legitime");
+        put(2, "Cereri care contin un posibil atac");
+        put(3, "Cereri de atac");
     }};
 }
