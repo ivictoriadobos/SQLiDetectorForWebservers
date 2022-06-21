@@ -19,38 +19,13 @@ public class ConsoleInputServiceImpl implements IInputService {
     @Override
     public ILog takeInput() {
 
-        int noOfBlankLines = 0;
-        boolean lastLineWasBlank = false;
-
         System.out.println("\tEnter a new log...\n");
 
         Scanner scanner = new Scanner(System.in);
 
         StringBuilder log = new StringBuilder();
-        while (scanner.hasNextLine()) {
-            String currentLine = scanner.nextLine();
-            log.append(currentLine).append("\n");
-
-            if (currentLine.equals("") && !lastLineWasBlank)
-            {
-                lastLineWasBlank = true;
-                noOfBlankLines = 1;
-                continue;
-            }
-
-            else if (!currentLine.equals("") && lastLineWasBlank) {
-                lastLineWasBlank = false;
-                noOfBlankLines = 0;
-                continue;
-            }
-
-            if(lastLineWasBlank)
-                noOfBlankLines++;
-
-            if(noOfBlankLines == 3)
-                break;
-        }
-
+        String currentLine = scanner.nextLine();
+        log.append(currentLine);
 
         if(!log.isEmpty())
             return new Log(log.toString());

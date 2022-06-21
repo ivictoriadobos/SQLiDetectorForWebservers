@@ -24,5 +24,6 @@ public class ParameterClassPredictorMap {
         put("command", ParameterClassTypeEnum.SQL);
         put("ddl", ParameterClassTypeEnum.SQL);
         put("dml", ParameterClassTypeEnum.SQL);
+        put("db", ParameterClassTypeEnum.SQL);
     }};
 }
