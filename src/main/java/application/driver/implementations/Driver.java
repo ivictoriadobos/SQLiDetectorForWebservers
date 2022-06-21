@@ -5,6 +5,9 @@ import application.driver.implementations.services.AnalysisServiceImpl;
 import application.driver.interfaces.*;
 import core.constants.AnaysisResultEnum;
 
+import java.util.List;
+import java.util.Map;
+
 public class Driver implements IDriverClass {
 
     private final IInputService inputService;
@@ -24,6 +27,10 @@ public class Driver implements IDriverClass {
             try {
 
                 ILog newLog = inputService.takeInput();
+
+                newLog.getMethod();
+                newLog.getQueryParameters();
+
                 launchNewAnalysis(newLog);
             }
 
