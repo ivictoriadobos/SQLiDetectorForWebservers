@@ -1,12 +1,9 @@
 package core.clusterer.acceslogtype;
 
 import org.apache.commons.math3.exception.DimensionMismatchException;
-import org.apache.commons.math3.ml.clustering.DBSCANClusterer;
 import org.apache.commons.math3.ml.distance.DistanceMeasure;
 
-import java.awt.*;
-
-public class ApacheDistanceMetric implements DistanceMeasure {
+public class EuclideanDistanceMeasure implements DistanceMeasure {
 
     @Override
     public double compute(double[] doubles, double[] doubles1) throws DimensionMismatchException {

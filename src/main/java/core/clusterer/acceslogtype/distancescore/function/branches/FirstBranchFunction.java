@@ -1,8 +1,8 @@
 package core.clusterer.acceslogtype.distancescore.function.branches;
 
-import core.clusterer.acceslogtype.distancescore.function.contracts.IManipulatorFunction;
+import core.clusterer.acceslogtype.distancescore.function.contracts.IBranchFunction;
 
-public class FirstBranchFunction implements IManipulatorFunction {
+public class FirstBranchFunction implements IBranchFunction {
 
     private final double lowerThreshold;
 
@@ -14,7 +14,7 @@ public class FirstBranchFunction implements IManipulatorFunction {
     }
 
     @Override
-    public double calculateScore(double logScore) { // 0 - 6
+    public double computeNormalizedScore(double logScore) { // 0 - 6
         if(lowerThreshold<=logScore && logScore<upperThreshold)
             return logScore;
 

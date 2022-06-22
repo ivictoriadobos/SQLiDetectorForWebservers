@@ -1,4 +1,5 @@
 package core.clusterer.acceslogtype;
+import application.driver.interfaces.ILog;
 import core.constants.SQLKeywordAndWeight;
 import core.constants.SQLSpecialCharacters;
 import core.constants.WeightClassEnum;
@@ -10,7 +11,7 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ApacheLog {
+public class ApacheLog implements ILog {
 
     public String LogClass = "";
     public int logIndexInFile = -1;
@@ -218,10 +219,6 @@ public class ApacheLog {
         return originalUriQuery;
     }
 
-    public String getHttpMethod() {
-        return httpMethod;
-    }
-
     public int getPayloadLength()
     {
         return Optional.of(originalUriQuery.length()).orElse(0);
@@ -236,5 +233,30 @@ public class ApacheLog {
         {
 //            e.printStackTrace(); weird parse exception we get even though there's no problem at parsing the respective log
         }
+    }
+
+    @Override
+    public String getMethod() {
+        return httpMethod;
+    }
+
+    @Override
+    public Map<String, String> getHeaders() {
+        return null;
+    }
+
+    @Override
+    public Map<String, String> getQueryParameters() {
+        return null;
+    }
+
+    @Override
+    public Map<String, String> getBodyParameters() {
+        return null;
+    }
+
+    @Override
+    public String getSrcIPAddress() {
+        return null;
     }
 }

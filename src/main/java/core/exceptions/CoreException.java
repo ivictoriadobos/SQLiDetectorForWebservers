@@ -1,9 +1,9 @@
 package core.exceptions;
 
-public class ClusterPhaseRuntimeException extends RuntimeException{
+public class CoreException extends RuntimeException {
     private final CoreExceptionCauseEnum exceptionCause;
 
-    public ClusterPhaseRuntimeException(CoreExceptionCauseEnum anExceptionCause) {
+    public CoreException(CoreExceptionCauseEnum anExceptionCause) {
         super(anExceptionCause.getErrorMessage());
         exceptionCause = anExceptionCause;
     }
