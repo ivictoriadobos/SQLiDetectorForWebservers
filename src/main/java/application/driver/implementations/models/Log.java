@@ -1,4 +1,4 @@
-package application.driver.implementations;
+package application.driver.implementations.models;
 
 import application.driver.interfaces.ILog;
 import application.driver.interfaces.constants.RequestPropertyIndex;
@@ -7,12 +7,16 @@ import rawhttp.core.RawHttpRequest;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.FormatStyle;
 import java.util.*;
 
 public class Log implements ILog {
 
 
-    private Date requestTimestamp;
+    private String requestTimestamp;
 
     private String ipSrcAddress;
 
@@ -63,7 +67,8 @@ public class Log implements ILog {
     }
 
     private void setRequestTimestamp(String aTimestamp) {
-//        requestTimestamp = Date.from(Instant.parse(aTimestamp));
+        requestTimestamp = aTimestamp;
+
     }
 
     private void setHttpRequest(String aStringLog) {

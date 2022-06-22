@@ -2,7 +2,7 @@ package core.transformers;
 
 import core.clusterer.acceslogtype.ApacheLogPoint;
 import core.clusterer.acceslogtype.ApacheLog;
-import core.clusterer.acceslogtype.distancescore.LogScoreCalculator;
+import core.clusterer.acceslogtype.distancescore.NormalizedLogScoreCalculator;
 
 import java.util.Optional;
 
@@ -11,14 +11,12 @@ public class LogToClusterPointMapper {
     public static ApacheLogPoint fromApacheLog(ApacheLog apacheLog)
     {
 
-        return new ApacheLogPoint(Optional.of(apacheLog.getOriginalUriQuery().length()).orElse(0),
-                apacheLog.getNumberOfSQLKeywords(),
-                apacheLog.getWeightedSumOfSQLKeywords(),
-                apacheLog.findOccurrencesNumberOfWhiteSpaces(),
-                apacheLog.getNumberOfSpecialCharacters(),
+        return new ApacheLogPoint(apacheLog.getWeightedSumOfSQLKeywords(),
                 apacheLog.getWeightedSumOfSpecialCharacters(),
                 apacheLog.LogClass,
-                LogScoreCalculator.calculate(apacheLog),
+                new NormalizedLogScoreCalculator(),
                 apacheLog);
     }
+
+
 }

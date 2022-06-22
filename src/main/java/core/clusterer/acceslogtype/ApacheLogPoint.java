@@ -1,61 +1,72 @@
 package core.clusterer.acceslogtype;
 
+import application.driver.interfaces.ILog;
+import core.clusterer.acceslogtype.distancescore.NormalizedLogScoreCalculator;
+import core.constants.LogLabelEnum;
+import core.interfaces.ILogPoint;
 import org.apache.commons.math3.ml.clustering.Clusterable;
 
-public class ApacheLogPoint implements Clusterable {
+public class ApacheLogPoint implements ILogPoint {
 
     public String LogClass = "";
 
-    public ApacheLog apacheLog;
-    public double[] Score;
-    private double lengthOfPayload;
+    private ApacheLog apacheLog;
+    private double[] logPoint;
 
-    private double numberOfSQLKeywordsInPayload;
-
+    private LogLabelEnum logLabel = null;
+    private NormalizedLogScoreCalculator scoreCalculator;
     private double weightedSumOfSQLKeywordsInPayload;
-
-    private double numberOfSpacesInPayload;
-
-    private double numberOfSpecialCharacters;
     private double weightedSumOfSpecialCharacters;
 
-    public ApacheLogPoint(double aLength,
-                          double aNumberOfSQLKeywords,
-                          double aWeightedSumOfSQLKeywords,
-                          double aNumberOfSpaces,
-                          double aNumberOfSpecialCharacters,
+    public ApacheLogPoint(double aWeightedSumOfSQLKeywords,
                           double aWeightedSumOfSpecialCharacters,
                           String aLogClass,
-                          double[] aScore,
+                          NormalizedLogScoreCalculator aScoreCalculator,
                           ApacheLog anApacheLog) {
 
-        lengthOfPayload = aLength;
-        numberOfSQLKeywordsInPayload = aNumberOfSQLKeywords;
         weightedSumOfSQLKeywordsInPayload = aWeightedSumOfSQLKeywords;
-        numberOfSpacesInPayload = aNumberOfSpaces;
-        numberOfSpecialCharacters = aNumberOfSpecialCharacters;
         weightedSumOfSpecialCharacters = aWeightedSumOfSpecialCharacters;
+
         LogClass = aLogClass;
 
-        Score = new double[2];
-        Score[0] = aScore[0];
-        Score[1] = aScore[1];
+        scoreCalculator = aScoreCalculator;
+        computeLogPointScore();
 
         apacheLog = anApacheLog;
     }
 
     @Override
     public double[] getPoint() {
-//        return new double[]{lengthOfPayload,
-//                            numberOfSQLKeywordsInPayload,
-//                            weightedSumOfSQLKeywordsInPayload,
-//                            numberOfSpacesInPayload,
-//                            numberOfSpecialCharactersInPayload};
-        return Score;
+
+        return logPoint;
     }
 
     public double getIntermediaryScore()
     {
         return weightedSumOfSQLKeywordsInPayload + weightedSumOfSpecialCharacters;
+    }
+
+    @Override
+    public LogLabelEnum getLabel() {
+
+        return logLabel;
+    }
+
+    public void setLabel(LogLabelEnum aLogLabel)
+    {
+        logLabel = aLogLabel;
+    }
+    @Override
+    public ILog getLog() {
+        return apacheLog;
+    }
+
+    private void computeLogPointScore()
+    {
+        logPoint = new double[]{0,0};
+
+        logPoint[0] = weightedSumOfSpecialCharacters  + weightedSumOfSQLKeywordsInPayload;
+
+        logPoint[1] = scoreCalculator.compute(logPoint[0]);
     }
 }
