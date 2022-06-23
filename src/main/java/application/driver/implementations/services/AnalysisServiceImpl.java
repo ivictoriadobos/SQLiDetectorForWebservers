@@ -3,29 +3,32 @@ package application.driver.implementations.services;
 import application.driver.interfaces.IAnalysisReport;
 import application.driver.interfaces.IAnalysisService;
 import application.driver.interfaces.ILog;
+import core.clusterer.acceslogtype.distancescore.NormalizedLogScoreCalculator;
 import core.constants.AnaysisResultEnum;
 import core.interfaces.ILogClassifier;
 import core.interfaces.ILogPoint;
-import core.models.LogPoint;
+import core.implementations.models.LogPoint;
 
 import java.util.Optional;
 
 public class AnalysisServiceImpl implements IAnalysisService {
 
-    private final ILogClassifier classifier;
+    private final ILogClassifier logClassifier;
 
     private  ILogPoint logPoint;
 
     public AnalysisServiceImpl(ILogClassifier aLogclassifier) {
-        classifier = aLogclassifier;
+        logClassifier = aLogclassifier;
     }
 
     @Override
     public AnaysisResultEnum analyseLog(ILog aLog) {
 
-        logPoint = new LogPoint(aLog);
+        logPoint = new LogPoint(aLog, new NormalizedLogScoreCalculator());
 
-        return classifier.classify(logPoint);
+        var logLabel =  logClassifier.classify(logPoint);
+
+
     }
 
     @Override

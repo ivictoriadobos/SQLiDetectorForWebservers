@@ -251,7 +251,7 @@ public class ApacheLog implements ILog {
     }
 
     @Override
-    public Map<String, String> getBodyParameters() {
+    public Optional<Map<String, String>> getBodyParameters() {
         return null;
     }
 

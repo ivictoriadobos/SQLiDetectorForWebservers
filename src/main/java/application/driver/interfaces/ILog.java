@@ -1,7 +1,7 @@
 package application.driver.interfaces;
 
-import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public interface ILog {
 
@@ -11,7 +11,7 @@ public interface ILog {
 
     public Map<String, String> getQueryParameters();
 
-    public Map<String, String> getBodyParameters();
+    public Optional<Map<String, String>> getBodyParameters();
 
     public String getSrcIPAddress();
 

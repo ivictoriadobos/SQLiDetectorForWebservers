@@ -12,8 +12,6 @@ public class ApacheLogPoint implements ILogPoint {
 
     private ApacheLog apacheLog;
     private double[] logPoint;
-
-    private LogLabelEnum logLabel = null;
     private NormalizedLogScoreCalculator scoreCalculator;
     private double weightedSumOfSQLKeywordsInPayload;
     private double weightedSumOfSpecialCharacters;
@@ -30,13 +28,16 @@ public class ApacheLogPoint implements ILogPoint {
         LogClass = aLogClass;
 
         scoreCalculator = aScoreCalculator;
-        computeLogPointScore();
 
         apacheLog = anApacheLog;
     }
 
     @Override
     public double[] getPoint() {
+
+        if (logPoint == null) {
+            computeLogPointScore();
+        }
 
         return logPoint;
     }
@@ -46,16 +47,6 @@ public class ApacheLogPoint implements ILogPoint {
         return weightedSumOfSQLKeywordsInPayload + weightedSumOfSpecialCharacters;
     }
 
-    @Override
-    public LogLabelEnum getLabel() {
-
-        return logLabel;
-    }
-
-    public void setLabel(LogLabelEnum aLogLabel)
-    {
-        logLabel = aLogLabel;
-    }
     @Override
     public ILog getLog() {
         return apacheLog;

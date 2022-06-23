@@ -1,4 +1,4 @@
-package core.clusterer.parametertype.dictionary;
+package core.constants;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -6,7 +6,5 @@ import org.apache.commons.math3.ml.clustering.Clusterable;
 
 public interface ILogPoint extends Clusterable {
 
-    public LogLabelEnum getLabel();
-
     public ILog getLog();
 }

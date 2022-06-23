@@ -2,15 +2,7 @@ package application.driver.implementations.models;
 
 import application.driver.interfaces.ILog;
 import application.driver.interfaces.constants.RequestPropertyIndex;
-import rawhttp.core.RawHttp;
-import rawhttp.core.RawHttpRequest;
 
-import java.io.IOException;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import java.time.format.FormatStyle;
 import java.util.*;
 
 public class Log implements ILog {
@@ -28,7 +20,7 @@ public class Log implements ILog {
 
     private Map<String, String> queryParameters;
 
-    private Map<String, String> bodyParameters;
+    private Optional<Map<String, String>> bodyParameters;
 
     private Map<String, String> headers;
 
@@ -57,7 +49,7 @@ public class Log implements ILog {
     }
 
     @Override
-    public Map<String, String> getBodyParameters() {
+    public Optional<Map<String, String>> getBodyParameters() {
         return bodyParameters;
     }
 
@@ -80,14 +72,11 @@ public class Log implements ILog {
         ipSrcAddress = requestChunks.get(RequestPropertyIndex.IPSRCADDRESS.getIdx());
 
         setFirstLine(requestChunks.get(RequestPropertyIndex.REQUEST_LINE.getIdx()));
+
         setQueryParameters();
-
         setHeaders(requestChunks.get(RequestPropertyIndex.HEADERS.getIdx()));
+        setBodyParameters(requestChunks.get(requestChunks.size()-1));
 
-        if (headers.containsKey("Content-Length"))
-        {
-            setBodyParameters(requestChunks.get(requestChunks.size()-1));
-        }
     }
 
     private void setFirstLine(String aFirstLine)
@@ -112,27 +101,41 @@ public class Log implements ILog {
 
     private void setBodyParameters(String aBodyContent)
     {
-        List<String> parameterPairs = List.of(aBodyContent.split("&"));
 
-        bodyParameters = new HashMap<>();
+        if (headers.containsKey("Content-Length")) {
+            List<String> parameterPairs = List.of(aBodyContent.split("&"));
 
-        parameterPairs.forEach(parameterPair -> {
-            List<String> paramPair = new ArrayList<>(List.of(parameterPair.split("=")));
-            if (paramPair.size() == 1)
-                paramPair.add("");
-            bodyParameters.put(paramPair.get(0), paramPair.get(1));
+            bodyParameters = Optional.of(new HashMap<>());
 
-        });
+            parameterPairs.forEach(parameterPair -> {
+                List<String> paramPair = new ArrayList<>(List.of(parameterPair.split("=")));
+                if (paramPair.size() == 1)
+                    paramPair.add("");
+                bodyParameters.get().put(paramPair.get(0), paramPair.get(1));
+
+            });
+        }
+
+        else bodyParameters = Optional.empty();
     }
 
     private void setQueryParameters()
     {
+
         if(requestUri.contains("?"))
         {
-            List<String> parameterPairs = List.of(requestUri.split("\\?"));
+            if ( queryParameters == null )
+            {
+                queryParameters = new HashMap<>();
+            }
 
-            parameterPairs.forEach(parameterPair ->
-                    queryParameters.put(parameterPair.split("=")[0], parameterPair.split("=")[1]));
+            List<String> targetPath_queryParameters = List.of(requestUri.split("\\?"));
+
+            Arrays.stream(targetPath_queryParameters.get(1).split("&"))
+                    .toList()
+                    .forEach( parameterPair ->
+                        queryParameters.put(parameterPair.split("=")[0], parameterPair.split("=")[1]));
+
         }
 
         else {

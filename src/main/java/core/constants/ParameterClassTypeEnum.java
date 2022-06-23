@@ -1,4 +1,4 @@
-package core.clusterer.parametertype.dictionary;
+package core.constants;
 
 public enum ParameterClassTypeEnum {
     SQL,
