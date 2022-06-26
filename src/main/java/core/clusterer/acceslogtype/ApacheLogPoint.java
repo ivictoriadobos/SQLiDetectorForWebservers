@@ -2,19 +2,22 @@ package core.clusterer.acceslogtype;
 
 import application.driver.interfaces.ILog;
 import core.clusterer.acceslogtype.distancescore.NormalizedLogScoreCalculator;
-import core.constants.LogLabelEnum;
 import core.interfaces.ILogPoint;
-import org.apache.commons.math3.ml.clustering.Clusterable;
+import core.interfaces.IParameter;
+import org.apache.commons.lang3.NotImplementedException;
+
+import java.util.List;
+import java.util.Optional;
 
 public class ApacheLogPoint implements ILogPoint {
 
     public String LogClass = "";
 
-    private ApacheLog apacheLog;
+    private final ApacheLog apacheLog;
     private double[] logPoint;
-    private NormalizedLogScoreCalculator scoreCalculator;
-    private double weightedSumOfSQLKeywordsInPayload;
-    private double weightedSumOfSpecialCharacters;
+    private final NormalizedLogScoreCalculator scoreCalculator;
+    private final double weightedSumOfSQLKeywordsInPayload;
+    private final double weightedSumOfSpecialCharacters;
 
     public ApacheLogPoint(double aWeightedSumOfSQLKeywords,
                           double aWeightedSumOfSpecialCharacters,
@@ -59,5 +62,10 @@ public class ApacheLogPoint implements ILogPoint {
         logPoint[0] = weightedSumOfSpecialCharacters  + weightedSumOfSQLKeywordsInPayload;
 
         logPoint[1] = scoreCalculator.compute(logPoint[0]);
+    }
+
+    @Override
+    public Optional<List<IParameter>> getInfectedParameters() {
+        throw new NotImplementedException();
     }
 }

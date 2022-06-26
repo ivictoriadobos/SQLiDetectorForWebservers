@@ -1,12 +1,9 @@
-package core.implementations;
+package core.implementations.logclassifier;
 
-import application.driver.interfaces.ILog;
 import application.io.logprovider.ClassifiedLogPointsMapProvider;
-import core.constants.AnaysisResultEnum;
 import core.constants.LogLabelEnum;
 import core.exceptions.CoreException;
 import core.exceptions.CoreExceptionCauseEnum;
-import core.implementations.models.LogPoint;
 import core.interfaces.ILogClassifier;
 import core.interfaces.ILogPoint;
 import org.apache.commons.math3.ml.distance.DistanceMeasure;
@@ -15,9 +12,9 @@ import org.apache.commons.math3.util.Pair;
 import java.util.*;
 
 public class KNNLogClassifier implements ILogClassifier {
-    private int n;
+    private final int n;
 
-    private DistanceMeasure distanceMeasure;
+    private final DistanceMeasure distanceMeasure;
 
     public KNNLogClassifier(int aNeighboursNumber, DistanceMeasure aDistanceMeasure) {
         n = aNeighboursNumber;
@@ -25,7 +22,7 @@ public class KNNLogClassifier implements ILogClassifier {
     }
 
     @Override
-    public AnaysisResultEnum classify(ILogPoint aLogPoint) {
+    public LogLabelEnum classify(ILogPoint aLogPoint) {
 
         // get closest n labeledLogPoints to aLogPoint. you take them from ClassifiedLogPointsMapProvider
 
@@ -40,22 +37,14 @@ public class KNNLogClassifier implements ILogClassifier {
 
         classesRank.sort((o1, o2) -> (int) (o2.getValue() - o1.getValue()));
 
-        switch (classesRank.get(0).getKey())
-        {
-            case NORMAL_ACCESS -> {
-                return AnaysisResultEnum.SAFE;
-            }
+        try {
 
-            case POSSIBLE_ATTACK -> {
-                return AnaysisResultEnum.INCONCLUSIVE;
-            }
-
-            case ATTACK -> {
-                return AnaysisResultEnum.NOT_SAFE;
-            }
+            return classesRank.get(0).getKey();
         }
 
-        throw new CoreException(CoreExceptionCauseEnum.LOG_CLASSIFIER_EXCEPTION);
+        catch (Exception e) {
+            throw new CoreException(CoreExceptionCauseEnum.LOG_CLASSIFIER_EXCEPTION);
+        }
     }
 
     private Map<LogLabelEnum, List<Pair<ILogPoint, Double>>> getClosestKNeighbours(ILogPoint aLogPoint)

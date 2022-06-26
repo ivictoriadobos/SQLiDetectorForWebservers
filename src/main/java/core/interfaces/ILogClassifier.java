@@ -1,8 +1,8 @@
 package core.interfaces;
 
-import core.constants.AnaysisResultEnum;
+import core.constants.LogLabelEnum;
 
 public interface ILogClassifier {
 
-    AnaysisResultEnum classify(ILogPoint aLogPoint);
+    LogLabelEnum classify(ILogPoint aLogPoint);
 }

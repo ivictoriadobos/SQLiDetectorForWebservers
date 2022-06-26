@@ -3,9 +3,12 @@ import application.driver.interfaces.ILog;
 import core.constants.SQLKeywordAndWeight;
 import core.constants.SQLSpecialCharacters;
 import core.constants.WeightClassEnum;
+import core.interfaces.IParameter;
 import core.transformers.UrlDecoder;
 import nl.basjes.parse.core.Field;
+
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -23,7 +26,7 @@ public class ApacheLog implements ILog {
 
     private String originalUriQuery = "";
 
-    private Map<String, String> uriParams = new HashMap<>(32);
+    private final Map<String, String> uriParams = new HashMap<>(32);
     private String target;
 
     private String originalUri;
@@ -117,7 +120,7 @@ public class ApacheLog implements ILog {
     {
         if(userAgent == null)
         {
-            userAgent = new String("");
+            userAgent = "";
             System.out.println("wut");
         }
         if (userAgent.length() == 0)
@@ -241,22 +244,22 @@ public class ApacheLog implements ILog {
     }
 
     @Override
-    public Map<String, String> getHeaders() {
+    public List<IParameter> getHeaders() {
         return null;
     }
 
     @Override
-    public Map<String, String> getQueryParameters() {
+    public List<IParameter> getQueryParameters() {
         return null;
     }
 
     @Override
-    public Optional<Map<String, String>> getBodyParameters() {
+    public Optional<List<IParameter>> getBodyParameters() {
         return null;
     }
 
     @Override
     public String getSrcIPAddress() {
-        return null;
+        return clientIP;
     }
 }

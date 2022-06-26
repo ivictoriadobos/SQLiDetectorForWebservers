@@ -8,7 +8,7 @@ public enum LogLabelEnum {
     POSSIBLE_ATTACK(1),
     ATTACK(2);
 
-    private int value;
+    private final int value;
     LogLabelEnum(int aValue) {
         value = aValue;
     }

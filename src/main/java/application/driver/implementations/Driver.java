@@ -1,11 +1,11 @@
 package application.driver.implementations;
 
 import application.driver.exceptions.ApplicationException;
-import application.driver.implementations.services.AnalysisServiceImpl;
+import application.driver.implementations.services.HTTPRequestAnalysisServiceImpl;
 import application.driver.interfaces.*;
 import core.clusterer.acceslogtype.EuclideanDistanceMeasure;
-import core.constants.AnaysisResultEnum;
-import core.implementations.KNNLogClassifier;
+import core.constants.AnalysisResultEnum;
+import core.implementations.logclassifier.KNNLogClassifier;
 
 public class Driver implements IDriverClass {
 
@@ -46,36 +46,38 @@ public class Driver implements IDriverClass {
         new Thread(() -> {
 
 
-            IAnalysisService analysisService = new AnalysisServiceImpl(new KNNLogClassifier(5, new EuclideanDistanceMeasure()));
+            IAnalysisService analysisService = new HTTPRequestAnalysisServiceImpl(new KNNLogClassifier(5, new EuclideanDistanceMeasure()));
 
-            AnaysisResultEnum analysisResult = analysisService.analyseLog(aLog);
+            IAnalysisReport analysisResult = analysisService.analyseLog(aLog);
 
 
-            if (!analysisResult.equals(AnaysisResultEnum.SAFE) &&
-                    aLog.getMethod().equalsIgnoreCase("GET"))
+            if (!analysisResult.summary().get().equals(AnalysisResultEnum.SAFE))
             {
                     // instant reject and finish analysis
-                System.out.println("GET Request contains sql commands in queryparams/headers. Rejecting it.");
+                System.out.println("Request contains sql commands in queryparams/headers. Rejecting it.");
+                System.out.println(analysisResult.fullDescription());
                 return;
             }
 
-            if ( analysisResult.equals(AnaysisResultEnum.INCONCLUSIVE))
+            if ( analysisResult.summary().get().equals(AnalysisResultEnum.INCONCLUSIVE))
             {
                 // further analysis needed
                 // classify if parameters that contain SQL commands expects such content
 
-                System.out.println("POST Request contains SQL commands, not sure if safe. Further analysis needed.");
+                System.out.println("Request contains SQL commands, not sure if safe. Human intervention needed.");
+                System.out.println(analysisResult.fullDescription());
                 return;
 
             }
 
-            if ( analysisResult.equals(AnaysisResultEnum.NOT_SAFE))
+            if ( analysisResult.equals(AnalysisResultEnum.NOT_SAFE))
             {
-                System.out.println("POST Request contains too many sql commands in order to be safe. Rejecting it.");
+                System.out.println("Request contains too many sql commands in order to be safe. Rejecting it.");
+                System.out.println(analysisResult.fullDescription());
                 return;
             }
 
-            outputService.outputAnalysis(analysisService.getDetailedReport().get());
+            outputService.outputAnalysis(analysisResult);
 
             }).start();
     }

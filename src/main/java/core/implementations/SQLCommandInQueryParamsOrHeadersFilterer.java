@@ -1,4 +1,4 @@
-package core.implementations.parameterclassifier;
+package core.implementations;
 
 import core.interfaces.ILogPoint;
 import core.interfaces.ICommandInQueryParamsOrHeadersFilter;

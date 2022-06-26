@@ -2,15 +2,10 @@ package core.implementations.models;
 
 import application.driver.interfaces.ILog;
 import core.clusterer.acceslogtype.distancescore.NormalizedLogScoreCalculator;
-import core.constants.LogLabelEnum;
-import core.constants.SQLKeywordAndWeight;
-import core.constants.SQLSpecialCharacters;
-import core.constants.WeightClassEnum;
+import core.constants.*;
 import core.interfaces.ILogPoint;
-
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import core.interfaces.IParameter;
+import java.util.*;
 
 public class LogPoint implements ILogPoint {
 
@@ -18,77 +13,29 @@ public class LogPoint implements ILogPoint {
 
     private double[] logPoint;
 
-    private NormalizedLogScoreCalculator scoreCalculator;
+    private List<IParameter> possibleInfectedBodyParametersMap;
+    private final NormalizedLogScoreCalculator scoreCalculator;
     private LogLabelEnum logLabel;
 
     public LogPoint(ILog aLog, NormalizedLogScoreCalculator aScoreCalculator) {
         log = aLog;
         scoreCalculator = aScoreCalculator;
+
+        computePoint();
     }
 
-    private double computeWeightedSumOfSQLKeywordsInMap(Map<String, String> parameterMap) {
+    private double computeIntermediaryRawScoreOfList(List<IParameter> aParameterList) {
         double sqlKeywordsScore = 0;
 
-        for (String parameterValue : parameterMap.values()) {
-            sqlKeywordsScore += computeWeightedSumOfGivenMapForParameterValue(SQLKeywordAndWeight.keywordsAndWeight, parameterValue);
+        for (IParameter parameter : aParameterList) {
+            sqlKeywordsScore += parameter.getIntermediaryPartialRawScore();
         }
 
         return sqlKeywordsScore;
     }
 
-    private double computeWeightedSumOfSpecialCharactersInMap(Map<String, String> parameterMap)
-    {
-        double specialCharactersScore = 0;
-
-        for (Map.Entry<String, String> mapEntry : parameterMap.entrySet()) {
-
-            if (mapEntry.getKey().equalsIgnoreCase("User-Agent"))
-            {
-                specialCharactersScore += computeWeightedSumOfGivenMapForParameterValue(SQLSpecialCharacters.specialCharactersForUserAgent, mapEntry.getValue());
-            }
-
-            else
-            {
-                specialCharactersScore += computeWeightedSumOfGivenMapForParameterValue(SQLSpecialCharacters.specialCharacters, mapEntry.getValue());
-            }
-        }
-
-        return specialCharactersScore;
-    }
-
-    private double computeWeightedSumOfGivenMapForParameterValue(Map<String, WeightClassEnum> anAttributeMap, String aParameterValue)
-    {
-        return anAttributeMap.keySet()
-                .stream()
-                .mapToDouble(key -> {
-
-                    Pattern regexPattern = Pattern.compile(key);
-                    Matcher matcher = regexPattern.matcher(aParameterValue);
-
-                    return matcher.results().count() * anAttributeMap.get(key).getValue();
-                })
-                .sum();
-    }
-
     @Override
     public double[] getPoint() {
-        if (logPoint == null)
-        {
-            double intermediaryRawScore = computeWeightedSumOfSQLKeywordsInMap(log.getQueryParameters()) +
-                                            computeWeightedSumOfSQLKeywordsInMap(log.getHeaders()) +
-
-                                            computeWeightedSumOfSpecialCharactersInMap(log.getQueryParameters()) +
-                                            computeWeightedSumOfSpecialCharactersInMap(log.getHeaders());
-
-            if ( log.getBodyParameters().isPresent())
-            {
-                intermediaryRawScore += computeWeightedSumOfSQLKeywordsInMap(log.getBodyParameters().get()) + computeWeightedSumOfSpecialCharactersInMap(log.getBodyParameters().get());
-
-            }
-
-            logPoint = new double[] { intermediaryRawScore, scoreCalculator.compute(intermediaryRawScore)};
-        }
-
         return logPoint;
     }
 
@@ -96,4 +43,37 @@ public class LogPoint implements ILogPoint {
         return log;
     }
 
+    @Override
+    public Optional<List<IParameter>> getInfectedParameters() {
+        return Optional.ofNullable(possibleInfectedBodyParametersMap);
+    }
+
+    private void computePoint()
+    {
+        double intermediaryRawScore = computeIntermediaryRawScoreOfList(log.getHeaders())
+                                    + computeIntermediaryRawScoreOfList(log.getQueryParameters());
+
+        if ( log.getBodyParameters().isPresent())
+        {
+            intermediaryRawScore += computeIntermediaryRawScoreOfList(log.getBodyParameters().get());
+
+            trackPossibleInfectedBodyParameters();
+        }
+
+        logPoint = new double[] { intermediaryRawScore, scoreCalculator.compute(intermediaryRawScore)};
+    }
+
+    private void trackPossibleInfectedBodyParameters()
+    {
+        possibleInfectedBodyParametersMap= new ArrayList<>();
+
+        log.getBodyParameters().get().forEach( parameter ->
+        {
+
+            if ( parameter.getIntermediaryPartialRawScore() >= ClusterScoreThreshold.POSSIBLE_ATTACK_LOWER_THRESHOLD.getValue())
+            {
+                possibleInfectedBodyParametersMap.add(parameter);
+            }
+        });
+    }
 }

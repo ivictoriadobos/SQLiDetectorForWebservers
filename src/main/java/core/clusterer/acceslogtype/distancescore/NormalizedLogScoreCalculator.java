@@ -1,7 +1,8 @@
 package core.clusterer.acceslogtype.distancescore;
 
-import core.clusterer.acceslogtype.distancescore.function.ScoreManipulatorFunction;
+import core.clusterer.acceslogtype.distancescore.function.ScoreNormalizingFunction;
 import core.clusterer.acceslogtype.distancescore.function.branches.*;
+import core.constants.ClusterScoreThreshold;
 
 import java.util.ArrayList;
 
@@ -11,12 +12,12 @@ public class NormalizedLogScoreCalculator {
     {
         double score = 0;
 
-        ScoreManipulatorFunction scoreManipulatorFunction = new ScoreManipulatorFunction(
+        ScoreNormalizingFunction scoreManipulatorFunction = new ScoreNormalizingFunction(
                 new ArrayList<>()
                 {{
-                    add(new FirstBranchFunction(0, 4.5));
-                    add(new SecondBranchFunction(4.5, 11));
-                    add(new ThirdBranchFunction(11, Integer.MAX_VALUE));
+                    add(new FirstBranchFunction(ClusterScoreThreshold.NORMAL_ACCESS_LOWER_THRESHOLD.getValue(), ClusterScoreThreshold.NORMAL_ACCESS_UPPER_THRESHOLD.getValue()));
+                    add(new SecondBranchFunction(ClusterScoreThreshold.POSSIBLE_ATTACK_LOWER_THRESHOLD.getValue(), ClusterScoreThreshold.POSSIBLE_ATTACK_UPPER_THRESHOLD.getValue()));
+                    add(new ThirdBranchFunction( ClusterScoreThreshold.ATTACK_LOWER_THRESHOLD.getValue(), ClusterScoreThreshold.ATTACK_UPPER_THRESHOLD.getValue()));
                 }}
         );
 

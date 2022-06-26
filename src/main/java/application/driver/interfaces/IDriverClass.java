@@ -2,7 +2,7 @@ package application.driver.interfaces;
 
 public interface IDriverClass {
 
-    public void start();
+    void start();
 
-    public void stop();
+    void stop();
 }
