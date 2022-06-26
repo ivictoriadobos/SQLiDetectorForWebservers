@@ -1,9 +1,9 @@
-package core.clusterer.parametertype.dictionary;
+package core.constants;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class ParameterClassPredictorMap {
+public class ParameterTypePredictorMap {
 
     public static Map<String, ParameterClassTypeEnum> map = new HashMap<>()
     {{

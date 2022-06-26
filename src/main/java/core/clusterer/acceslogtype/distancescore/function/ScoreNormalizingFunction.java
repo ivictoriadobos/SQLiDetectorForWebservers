@@ -4,11 +4,11 @@ import core.clusterer.acceslogtype.distancescore.function.contracts.IBranchFunct
 
 import java.util.List;
 
-public class ScoreManipulatorFunction implements IBranchFunction {
+public class ScoreNormalizingFunction implements IBranchFunction {
 
     private final List<IBranchFunction> branchFunctions;
 
-    public ScoreManipulatorFunction(List<IBranchFunction> aListOfBranchFunctions) {
+    public ScoreNormalizingFunction(List<IBranchFunction> aListOfBranchFunctions) {
         branchFunctions = aListOfBranchFunctions;
     }
 

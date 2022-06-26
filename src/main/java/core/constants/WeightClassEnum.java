@@ -7,7 +7,7 @@ public enum WeightClassEnum {
     LOW(0.2),
     EXTRA_LOW(0.1);
 
-    private double value;
+    private final double value;
     WeightClassEnum(double i) {
         value = i;
     }

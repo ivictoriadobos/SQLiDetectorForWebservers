@@ -2,7 +2,6 @@ package core.transformers;
 
 import core.exceptions.ClusterPhaseRuntimeException;
 import core.exceptions.CoreExceptionCauseEnum;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;

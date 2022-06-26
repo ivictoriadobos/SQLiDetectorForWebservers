@@ -2,19 +2,13 @@ package application.driver.implementations.models;
 
 import application.driver.interfaces.ILog;
 import application.driver.interfaces.constants.RequestPropertyIndex;
-import rawhttp.core.RawHttp;
-import rawhttp.core.RawHttpRequest;
+import core.implementations.models.HTTPRequestParameter;
+import core.interfaces.IParameter;
+import org.apache.commons.math3.util.Pair;
 
-import java.io.IOException;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import java.time.format.FormatStyle;
 import java.util.*;
 
 public class Log implements ILog {
-
 
     private String requestTimestamp;
 
@@ -26,11 +20,11 @@ public class Log implements ILog {
 
     private String httpVersion;
 
-    private Map<String, String> queryParameters;
+    private List<IParameter> queryParameters;
 
-    private Map<String, String> bodyParameters;
+    private List<IParameter> bodyParameters;
 
-    private Map<String, String> headers;
+    private List<IParameter> headers;
 
 
     public Log(String aStringLog)
@@ -47,18 +41,18 @@ public class Log implements ILog {
     }
 
     @Override
-    public Map<String, String> getHeaders() {
+    public List<IParameter> getHeaders() {
         return headers;
     }
 
     @Override
-    public Map<String, String> getQueryParameters() {
+    public List<IParameter> getQueryParameters() {
         return queryParameters;
     }
 
     @Override
-    public Map<String, String> getBodyParameters() {
-        return bodyParameters;
+    public Optional<List<IParameter>> getBodyParameters() {
+        return Optional.ofNullable(bodyParameters);
     }
 
     @Override
@@ -80,14 +74,19 @@ public class Log implements ILog {
         ipSrcAddress = requestChunks.get(RequestPropertyIndex.IPSRCADDRESS.getIdx());
 
         setFirstLine(requestChunks.get(RequestPropertyIndex.REQUEST_LINE.getIdx()));
-        setQueryParameters();
 
+        setQueryParameters();
         setHeaders(requestChunks.get(RequestPropertyIndex.HEADERS.getIdx()));
 
-        if (headers.containsKey("Content-Length"))
-        {
-            setBodyParameters(requestChunks.get(requestChunks.size()-1));
+        try {
+
+            setBodyParameters(requestChunks.get(RequestPropertyIndex.BODY.getIdx()));
         }
+
+        catch (Exception ignored)
+        {
+        }
+
     }
 
     private void setFirstLine(String aFirstLine)
@@ -103,40 +102,54 @@ public class Log implements ILog {
     {
         List<String> headerPairs = List.of(aStringOfHeaders.translateEscapes().split("\n"));
 
-        headers = new HashMap<>();
+        headers = new ArrayList<>();
 
         headerPairs.forEach(headerPair ->
-                headers.put(headerPair.split(": ")[0].trim(), headerPair.split(": ")[1].trim()));
+                headers.add(new HTTPRequestParameter(headerPair.split(": ")[0].trim(), headerPair.split(": ")[1].trim())) );
 
     }
 
     private void setBodyParameters(String aBodyContent)
     {
-        List<String> parameterPairs = List.of(aBodyContent.split("&"));
 
-        bodyParameters = new HashMap<>();
 
-        parameterPairs.forEach(parameterPair -> {
-            List<String> paramPair = new ArrayList<>(List.of(parameterPair.split("=")));
-            if (paramPair.size() == 1)
-                paramPair.add("");
-            bodyParameters.put(paramPair.get(0), paramPair.get(1));
+        if (headers.stream().anyMatch( header -> header.getName().equals("Content-Length"))) {
+            List<String> parameterPairs = List.of(aBodyContent.split("&"));
 
-        });
+            bodyParameters = new ArrayList<>();
+
+            parameterPairs.forEach(parameterPair -> {
+                List<String> paramPair = new ArrayList<>(List.of(parameterPair.split("=")));
+                if (paramPair.size() == 1)
+                    paramPair.add("");
+                bodyParameters.add(new HTTPRequestParameter(paramPair.get(0), paramPair.get(1)));
+
+            });
+        }
+
     }
 
     private void setQueryParameters()
     {
+
         if(requestUri.contains("?"))
         {
-            List<String> parameterPairs = List.of(requestUri.split("\\?"));
+            if ( queryParameters == null )
+            {
+                queryParameters = new ArrayList<>();
+            }
 
-            parameterPairs.forEach(parameterPair ->
-                    queryParameters.put(parameterPair.split("=")[0], parameterPair.split("=")[1]));
+            List<String> targetPath_queryParameters = List.of(requestUri.split("\\?"));
+
+            Arrays.stream(targetPath_queryParameters.get(1).split("&"))
+                    .toList()
+                    .forEach( parameterPair ->
+                        queryParameters.add(new HTTPRequestParameter(parameterPair.split("=")[0], parameterPair.split("=")[1])));
+
         }
 
         else {
-            queryParameters = Map.of();
+            queryParameters = List.of();
         }
     }
 }

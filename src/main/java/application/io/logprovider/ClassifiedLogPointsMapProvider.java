@@ -7,6 +7,7 @@ import core.constants.LogLabelEnum;
 import core.interfaces.ILogPoint;
 import org.apache.commons.math3.ml.clustering.Cluster;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -18,6 +19,8 @@ public class ClassifiedLogPointsMapProvider {
     public static Optional<Map<LogLabelEnum, List<ILogPoint>>> loadClassifiedLogPointsMapFromClustererResult(List<Cluster<ILogPoint>> clusters)
     {
         int idx = 0;
+
+        labeledLogPointsMap = new HashMap<>();
 
         for (Cluster<ILogPoint> cluster : clusters)
         {
