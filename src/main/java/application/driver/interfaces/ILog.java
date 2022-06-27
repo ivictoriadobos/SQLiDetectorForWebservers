@@ -17,4 +17,6 @@ public interface ILog {
     Optional<List<IParameter>> getBodyParameters();
 
     String getSrcIPAddress();
+
+    String getTimeOfRequest();
 }

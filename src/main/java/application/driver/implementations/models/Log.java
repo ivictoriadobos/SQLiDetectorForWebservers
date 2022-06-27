@@ -152,4 +152,9 @@ public class Log implements ILog {
             queryParameters = List.of();
         }
     }
+
+    @Override
+    public String getTimeOfRequest() {
+        return null;
+    }
 }

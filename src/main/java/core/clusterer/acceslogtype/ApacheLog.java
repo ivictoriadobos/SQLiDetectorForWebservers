@@ -3,14 +3,12 @@ import application.driver.interfaces.ILog;
 import core.constants.SQLKeywordAndWeight;
 import core.constants.SQLSpecialCharacters;
 import core.constants.WeightClassEnum;
+import core.implementations.models.HTTPRequestParameter;
 import core.interfaces.IParameter;
 import core.transformers.UrlDecoder;
 import nl.basjes.parse.core.Field;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,7 +22,7 @@ public class ApacheLog implements ILog {
 
     private String httpMethod;
 
-    private String originalUriQuery = "";
+    private String firstLine = "";
 
     private final Map<String, String> uriParams = new HashMap<>(32);
     private String target;
@@ -46,7 +44,7 @@ public class ApacheLog implements ILog {
 
     public void clear()
     {
-        sizeInBytes = referer = userAgent = statusCode = originalUri = target = originalUriQuery = httpMethod = timeOfRequest = clientIP = "";
+        sizeInBytes = referer = userAgent = statusCode = originalUri = target = firstLine = httpMethod = timeOfRequest = clientIP = "";
         uriParams.clear();
     }
 
@@ -106,12 +104,12 @@ public class ApacheLog implements ILog {
     }
     private int regexMatchSequenceOverRequestUri(final String sequence)
     {
-        if (originalUriQuery.length() == 0)
+        if (firstLine.length() == 0)
             return 0;
 
         Pattern sequenceRegexPattern = Pattern.compile(sequence);
 
-        Matcher matcher = sequenceRegexPattern.matcher(originalUriQuery);
+        Matcher matcher = sequenceRegexPattern.matcher(firstLine);
 
         return (int) matcher.results().count();
     }
@@ -134,14 +132,14 @@ public class ApacheLog implements ILog {
 
     public int findOccurrencesNumberOfWhiteSpaces()
     {
-        if (originalUriQuery.length() == 0)
+        if (firstLine.length() == 0)
             return 0;
 
         int numberOfSpecialCharacters = 0;
 
         Pattern sequenceRegexPattern = Pattern.compile("\\s");
 
-        Matcher matcher = sequenceRegexPattern.matcher(originalUriQuery);
+        Matcher matcher = sequenceRegexPattern.matcher(firstLine);
 
         numberOfSpecialCharacters += matcher.results().count();
 
@@ -178,14 +176,14 @@ public class ApacheLog implements ILog {
         target = value;
     }
 
-    @Field("HTTP.QUERYSTRING:request.firstline.original.uri.query")
-    public void setOriginalUriQuery(final String value)
+    @Field("HTTP.FIRSTLINE:request.firstline")
+    public void setFirstline(final String value)
     {
-        originalUriQuery = value;
+        firstLine = value;
 
-        originalUriQuery = originalUriQuery.toUpperCase();
+        firstLine = firstLine.toUpperCase();
 
-        decode();
+//        decode();
     }
 
     @Field("IP:connection.client.host")
@@ -218,19 +216,19 @@ public class ApacheLog implements ILog {
         userAgent = value;
     }
 
-    public String getOriginalUriQuery() {
-        return originalUriQuery;
+    public String getFirstLine() {
+        return firstLine;
     }
 
     public int getPayloadLength()
     {
-        return Optional.of(originalUriQuery.length()).orElse(0);
+        return Optional.of(firstLine.length()).orElse(0);
     }
 
     private void decode()
     {
         try {
-            originalUriQuery = UrlDecoder.decode(originalUriQuery);
+            firstLine = UrlDecoder.decode(firstLine);
         }
         catch (Exception e)
         {
@@ -245,7 +243,15 @@ public class ApacheLog implements ILog {
 
     @Override
     public List<IParameter> getHeaders() {
-        return null;
+
+        List<IParameter> toBeReturned = new ArrayList<>();
+        if (userAgent != null && userAgent.length() > 0)
+            toBeReturned.add(new HTTPRequestParameter("User-Agent", userAgent));
+
+        if (referer != null && referer.length() >0 )
+            toBeReturned.add(new HTTPRequestParameter("Referer", referer));
+
+        return toBeReturned;
     }
 
     @Override
@@ -261,5 +267,10 @@ public class ApacheLog implements ILog {
     @Override
     public String getSrcIPAddress() {
         return clientIP;
+    }
+
+    @Override
+    public String getTimeOfRequest() {
+        return timeOfRequest;
     }
 }

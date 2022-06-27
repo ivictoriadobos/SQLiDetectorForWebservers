@@ -24,12 +24,12 @@ public class HTTPRequestParameter implements IParameter {
 
     @Override
     public String getName() {
-        return null;
+        return name;
     }
 
     @Override
     public String getValue() {
-        return null;
+        return value;
     }
 
     @Override
