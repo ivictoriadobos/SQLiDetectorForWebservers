@@ -1,21 +1,22 @@
 package application;
 
+import application.driver.exceptions.ApplicationException;
+import application.driver.exceptions.ApplicationExceptionCauseEnum;
+import application.driver.implementations.Driver;
+import application.driver.implementations.services.ConsoleInputServiceImpl;
+import application.driver.implementations.services.ConsoleOutputServiceImpl;
+import application.driver.interfaces.IDriverClass;
 import application.io.logprovider.ApacheLogProvider;
-import core.clusterer.acceslogtype.ApacheLog;
+import application.io.logprovider.ClassifiedLogPointsMapProvider;
 import core.clusterer.acceslogtype.EuclideanDistanceMeasure;
 import core.exceptions.ClusterPhaseRuntimeException;
 import core.exceptions.CoreExceptionCauseEnum;
 import core.interfaces.ILogPoint;
 import core.transformers.LogToClusterPointMapper;
-import nl.basjes.parse.core.exceptions.DissectionFailure;
-import nl.basjes.parse.core.exceptions.InvalidDissectorException;
-import nl.basjes.parse.core.exceptions.MissingDissectorsException;
-import nl.basjes.parse.httpdlog.HttpdLoglineParser;
 import org.apache.commons.math3.ml.clustering.Cluster;
 import org.apache.commons.math3.ml.clustering.DBSCANClusterer;
 import java.awt.*;
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,68 +24,12 @@ import java.util.stream.Collectors;
 public class Main {
     public static void main(String[] args) throws IOException {
 
-        String filePath = "logfiles/legit_attack_logs.txt";
-//        String filePath = "logfiles\\test.txt";
-        String logFormat = "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"";
-        var apacheLogParser = new HttpdLoglineParser<ApacheLog>(ApacheLog.class, logFormat);
-
-        try (InputStreamReader streamReader = new InputStreamReader(getFileFromResourceAsStream(filePath),
-                StandardCharsets.UTF_8);
-
-             BufferedReader reader = new BufferedReader(streamReader)) {
-            String newLine = System.getProperty("line.separator");
-
-            String LogClass = "";
-            String line;
-            int i = 1;
-            while ((line = reader.readLine()) != null)
-            {
-                if(line.length() == 1) // temporary if structure, useful for vizualization
-                {
-                    LogClass = line;
-                    FileWriter myWriter = new FileWriter("C:\\Users\\ioana.dobos\\Desktop\\onboarding-projects\\Licenta\\SQLiDetectorForWebservers\\src\\main\\resources\\logfiles\\apachetotsharklogs.txt", true);
-                    myWriter.append(line+newLine);
-                    myWriter.close();
-
-                    continue;
-                }
-
-                ApacheLog apacheLog = apacheLogParser.parse(line);
-                i++;
-
-                try {
-                    FileWriter myWriter = new FileWriter("C:\\Users\\ioana.dobos\\Desktop\\onboarding-projects\\Licenta\\SQLiDetectorForWebservers\\src\\main\\resources\\logfiles\\apachetotsharklogs.txt", true);
-
-                    StringBuilder headersBuilder = new StringBuilder();
-                    apacheLog.getHeaders().forEach(header ->
-                    {
-                        headersBuilder.append(header.getName()+ ": " + header.getValue() + "\\r\\n ");
-                    });
-
-                    myWriter.append(apacheLog.getTimeOfRequest() + "\t" + apacheLog.getSrcIPAddress() + "\t" +
-                            apacheLog.getFirstLine() + "\\r\\n\t" + headersBuilder.toString() + newLine );
-                    myWriter.close();
-                } catch (IOException e) {
-                    System.out.println("An error occurred.");
-                    e.printStackTrace();
-                }
-            }
-
-        } catch (IOException | DissectionFailure | InvalidDissectorException | MissingDissectorsException e) {
-            e.printStackTrace();
-            throw new ClusterPhaseRuntimeException(CoreExceptionCauseEnum.PARSING_APACHE_LOG_EXCEPTION);
-        }
-
-
-
-/*        var apacheLogPoints = loadLogs();
+        var apacheLogPoints = loadLogs();
 
         List<Cluster<ILogPoint>> clusters = clusterLogPoints(2, 10, apacheLogPoints);
 
         ClassifiedLogPointsMapProvider.loadClassifiedLogPointsMapFromClustererResult(clusters);
 
-
-        Object ExceptionReasonEnum;
         if (args.length == 1 && (Objects.equals(args[0], "--console") || Objects.equals(args[0], "--server"))) {
             // TODO : switch DI according to command line argument
             IDriverClass applicationDriver = new Driver(new ConsoleInputServiceImpl(), new ConsoleOutputServiceImpl());
@@ -92,7 +37,7 @@ public class Main {
             applicationDriver.start();
 
         } else throw new ApplicationException(ApplicationExceptionCauseEnum.INVALID_ARGUMENTS);
-*/
+
     }
 
     private static List<ILogPoint> loadLogs()
