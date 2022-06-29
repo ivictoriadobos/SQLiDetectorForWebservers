@@ -6,6 +6,7 @@ import core.constants.WeightClassEnum;
 import core.exceptions.CoreException;
 import core.exceptions.CoreExceptionCauseEnum;
 import core.interfaces.IParameter;
+import core.transformers.UrlDecoder;
 
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -70,7 +71,7 @@ public class HTTPRequestParameter implements IParameter {
             throw new CoreException(CoreExceptionCauseEnum.INVALID_PARAMETER_NAME);
         }
 
-        name = aName;
+        name = UrlDecoder.decode(aName);
     }
 
     private void setValue(String aValue)
@@ -80,7 +81,7 @@ public class HTTPRequestParameter implements IParameter {
             throw new CoreException(CoreExceptionCauseEnum.INVALID_PARAMETER_VALUE);
         }
 
-        value = aValue;
+        value = UrlDecoder.decode(aValue);
 
     }
 }

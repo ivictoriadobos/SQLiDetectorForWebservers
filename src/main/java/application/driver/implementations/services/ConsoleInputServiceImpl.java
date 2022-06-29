@@ -12,18 +12,14 @@ public class ConsoleInputServiceImpl implements IInputService {
     @Override
     public ILog takeInput() {
 
+        System.out.println();
         System.out.println("\tEnter a new log...\n");
 
         Scanner scanner = new Scanner(System.in);
 
-        StringBuilder log = new StringBuilder();
         String currentLine = scanner.nextLine();
-        log.append(currentLine);
 
-        if(!log.isEmpty())
-            return new Log(log.toString());
-
-        else throw new ApplicationException(ApplicationExceptionCauseEnum.NULL_INPUT);
+        return new Log(currentLine);
     }
 
 //        try (InputStreamReader in = new InputStreamReader(System.in);

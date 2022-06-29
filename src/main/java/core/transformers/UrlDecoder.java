@@ -1,6 +1,5 @@
 package core.transformers;
-
-import core.exceptions.ClusterPhaseRuntimeException;
+import core.exceptions.CoreException;
 import core.exceptions.CoreExceptionCauseEnum;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -12,7 +11,7 @@ public class UrlDecoder {
         try {
             return URLDecoder.decode(urlEncoded, StandardCharsets.UTF_8.toString());
         } catch (UnsupportedEncodingException e) {
-            throw new ClusterPhaseRuntimeException(CoreExceptionCauseEnum.URL_DECODING_EXCEPTION);
+            throw new CoreException(CoreExceptionCauseEnum.URL_DECODING_EXCEPTION);
         }
     }
 }

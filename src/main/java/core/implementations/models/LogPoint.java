@@ -25,9 +25,11 @@ public class LogPoint implements ILogPoint {
     }
 
     private double computeIntermediaryRawScoreOfList(List<IParameter> aParameterList) {
+
         double sqlKeywordsScore = 0;
 
         for (IParameter parameter : aParameterList) {
+
             sqlKeywordsScore += parameter.getIntermediaryPartialRawScore();
         }
 

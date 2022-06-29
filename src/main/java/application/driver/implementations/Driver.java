@@ -1,6 +1,7 @@
 package application.driver.implementations;
 
 import application.driver.exceptions.ApplicationException;
+import application.driver.exceptions.ApplicationExceptionCauseEnum;
 import application.driver.implementations.services.HTTPRequestAnalysisServiceImpl;
 import application.driver.interfaces.*;
 import core.clusterer.acceslogtype.EuclideanDistanceMeasure;
@@ -23,15 +24,20 @@ public class Driver implements IDriverClass {
 
         while (true)
         {
+            ILog newLog;
             try {
 
-                ILog newLog = inputService.takeInput();
 
+                newLog = inputService.takeInput();
                 launchNewAnalysis(newLog);
             }
 
             catch (ApplicationException ignored)
             {
+                if (ignored.getExceptionCauseCode().equals(ApplicationExceptionCauseEnum.EXCEPTION_AR_PARSING_LOG))
+                {
+                    System.out.println("Could not parse log, ignoring it");
+                }
             }
         }
     }
@@ -50,12 +56,9 @@ public class Driver implements IDriverClass {
 
             IAnalysisReport analysisResult = analysisService.analyseLog(aLog);
 
-
-            if (!analysisResult.summary().get().equals(AnalysisResultEnum.SAFE))
+            if (analysisResult.equals(AnalysisResultEnum.SAFE))
             {
-                    // instant reject and finish analysis
-                System.out.println("Request contains sql commands in queryparams/headers. Rejecting it.");
-                System.out.println(analysisResult.fullDescription());
+                System.out.println("Request seems to be safe, accepting it.");
                 return;
             }
 
@@ -76,6 +79,8 @@ public class Driver implements IDriverClass {
                 System.out.println(analysisResult.fullDescription());
                 return;
             }
+
+
 
             outputService.outputAnalysis(analysisResult);
 
