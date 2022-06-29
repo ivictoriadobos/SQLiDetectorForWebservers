@@ -2,7 +2,7 @@ package application.io.logprovider;
 
 import application.Main;
 import core.clusterer.acceslogtype.ApacheLog;
-import core.exceptions.ClusterPhaseRuntimeException;
+import core.exceptions.CoreException;
 import core.exceptions.CoreExceptionCauseEnum;
 import nl.basjes.parse.core.Parser;
 import nl.basjes.parse.core.exceptions.DissectionFailure;
@@ -61,7 +61,7 @@ public class ApacheLogProvider {
 
         } catch (IOException | DissectionFailure | InvalidDissectorException | MissingDissectorsException e) {
             e.printStackTrace();
-            throw new ClusterPhaseRuntimeException(CoreExceptionCauseEnum.PARSING_APACHE_LOG_EXCEPTION);
+            throw new CoreException(CoreExceptionCauseEnum.PARSING_APACHE_LOG_EXCEPTION);
         }
 
         return apacheLogs;
@@ -75,7 +75,7 @@ public class ApacheLogProvider {
 
         // the stream holding the file content
         if (inputStream == null) {
-            throw new ClusterPhaseRuntimeException(CoreExceptionCauseEnum.LOG_FILE_NOT_FOUND);
+            throw new CoreException(CoreExceptionCauseEnum.TRAIN_LOG_FILE_NOT_FOUND);
         } else {
             return inputStream;
         }

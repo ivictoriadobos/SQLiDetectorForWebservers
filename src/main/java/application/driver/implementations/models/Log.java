@@ -1,7 +1,11 @@
 package application.driver.implementations.models;
 
+import application.driver.exceptions.ApplicationException;
+import application.driver.exceptions.ApplicationExceptionCauseEnum;
 import application.driver.interfaces.ILog;
 import application.driver.interfaces.constants.RequestPropertyIndex;
+import core.exceptions.CoreException;
+import core.exceptions.CoreExceptionCauseEnum;
 import core.implementations.models.HTTPRequestParameter;
 import core.interfaces.IParameter;
 import org.apache.commons.math3.util.Pair;
@@ -26,13 +30,24 @@ public class Log implements ILog {
 
     private List<IParameter> headers;
 
-
     public Log(String aStringLog)
     {
-        List<String> logChunks = List.of(aStringLog.split("\\t"));
 
-        setRequestTimestamp(logChunks.get(0));
-        setHttpRequest(aStringLog);
+        try {
+
+            System.out.println("Log to be parsed: " + aStringLog);
+
+            List<String> logChunks = List.of(aStringLog.split("\\t"));
+
+            setRequestTimestamp(logChunks.get(0));
+            setHttpRequest(aStringLog);
+        }
+
+        catch (Exception e)
+        {
+            throw new ApplicationException(ApplicationExceptionCauseEnum.EXCEPTION_AR_PARSING_LOG);
+        }
+
     }
 
     @Override
@@ -67,6 +82,7 @@ public class Log implements ILog {
 
     private void setHttpRequest(String aStringLog) {
 
+
         List<String> requestChunks = List.of(aStringLog.split("\\t"));
 
 //        requestTimestamp = ...
@@ -76,7 +92,9 @@ public class Log implements ILog {
         setFirstLine(requestChunks.get(RequestPropertyIndex.REQUEST_LINE.getIdx()));
 
         setQueryParameters();
+
         setHeaders(requestChunks.get(RequestPropertyIndex.HEADERS.getIdx()));
+
 
         try {
 
@@ -93,7 +111,7 @@ public class Log implements ILog {
     {
         List<String> firstLineChunks =  List.of(aFirstLine.translateEscapes().trim().split(" "));
 
-        method = firstLineChunks.get(0);
+        setMethod(firstLineChunks.get(0));
         requestUri = firstLineChunks.get(1);
         httpVersion = firstLineChunks.get(2);
     }
@@ -132,7 +150,7 @@ public class Log implements ILog {
     private void setQueryParameters()
     {
 
-        if(requestUri.contains("?"))
+        if(requestUri.contains("?") && requestUri.contains("="))
         {
             if ( queryParameters == null )
             {
@@ -141,11 +159,15 @@ public class Log implements ILog {
 
             List<String> targetPath_queryParameters = List.of(requestUri.split("\\?"));
 
-            Arrays.stream(targetPath_queryParameters.get(1).split("&"))
-                    .toList()
-                    .forEach( parameterPair ->
-                        queryParameters.add(new HTTPRequestParameter(parameterPair.split("=")[0], parameterPair.split("=")[1])));
+            List<String> parameterPairs = List.of(targetPath_queryParameters.get(1).split("&"));
 
+            parameterPairs.forEach(parameterPair ->
+            {
+                List<String> paramPair = new ArrayList<>(List.of(parameterPair.split("=")));
+                if (paramPair.size() == 1)
+                    paramPair.add("");
+                queryParameters.add(new HTTPRequestParameter(paramPair.get(0), paramPair.get(1)));
+            });
         }
 
         else {
@@ -153,8 +175,18 @@ public class Log implements ILog {
         }
     }
 
+    private void setMethod(String aMethod)
+    {
+        if (aMethod.equalsIgnoreCase("POST") || aMethod.equalsIgnoreCase("GET"))
+        {
+            method = aMethod;
+        }
+
+        else throw new CoreException(CoreExceptionCauseEnum.METHOD_NOT_SUPPORTED);
+    }
+
     @Override
     public String getTimeOfRequest() {
-        return null;
+        return requestTimestamp;
     }
 }

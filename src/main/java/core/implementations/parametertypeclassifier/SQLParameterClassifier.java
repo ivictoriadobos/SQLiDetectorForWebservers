@@ -32,9 +32,11 @@ public class SQLParameterClassifier implements IParameterTypeClassifier {
                 Pattern namePattern = Pattern.compile(entry.getKey());
                 Matcher matcher = namePattern.matcher(parameter.getName());
 
-                switch (entry.getValue()) {
-                    case SQL -> score += 10;
-                    case NSQL -> score -= 10;
+                if (matcher.results().count() != 0) {
+                    switch (entry.getValue()) {
+                        case SQL -> score += 10;
+                        case NSQL -> score -= 10;
+                    }
                 }
             }
 
@@ -48,20 +50,29 @@ public class SQLParameterClassifier implements IParameterTypeClassifier {
 //        });
 
         // collection of parameters that are infected (contain SQL commands) but as their name suggest this shouldn't be the case
-        var infectedParameters = parameterNameScore.stream().filter(pair -> pair.getFirst() <= 100).collect(Collectors.toList());
+        var nonSQLParameters = parameterNameScore.stream().filter(pair -> pair.getFirst() < 100).collect(Collectors.toList());
+        var SQLParameters = parameterNameScore.stream().filter(pair -> pair.getFirst() > 100).collect(Collectors.toList());
         var report = new SQLAnalysisReport();
 
 
-        if (infectedParameters.size() > 0 )
+        if (nonSQLParameters.size() > 0 )
         {
-            infectedParameters.forEach(scoreOfParameterPair ->
+            nonSQLParameters.forEach(scoreOfParameterPair ->
                     report.addInfectedParameter(scoreOfParameterPair.getValue()));
 
             report.setAnalysisResult(AnalysisResultEnum.NOT_SAFE);
-            return report;
         }
 
-        report.setAnalysisResult(AnalysisResultEnum.SAFE);
+        else if (SQLParameters.size() == aListOfParameters.size())
+        {
+            report.setAnalysisResult(AnalysisResultEnum.SAFE);
+        }
+
+        else
+        {
+            report.setAnalysisResult(AnalysisResultEnum.INCONCLUSIVE);
+        }
+
         return report;
     }
 }

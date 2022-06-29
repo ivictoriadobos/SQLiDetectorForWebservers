@@ -5,11 +5,12 @@ import application.driver.exceptions.ApplicationExceptionCauseEnum;
 import application.driver.implementations.Driver;
 import application.driver.implementations.services.ConsoleInputServiceImpl;
 import application.driver.implementations.services.ConsoleOutputServiceImpl;
+import application.driver.implementations.services.TailBashCommandInputServiceImpl;
 import application.driver.interfaces.IDriverClass;
 import application.io.logprovider.ApacheLogProvider;
 import application.io.logprovider.ClassifiedLogPointsMapProvider;
 import core.clusterer.acceslogtype.EuclideanDistanceMeasure;
-import core.exceptions.ClusterPhaseRuntimeException;
+import core.exceptions.CoreException;
 import core.exceptions.CoreExceptionCauseEnum;
 import core.interfaces.ILogPoint;
 import core.transformers.LogToClusterPointMapper;
@@ -31,13 +32,22 @@ public class Main {
         ClassifiedLogPointsMapProvider.loadClassifiedLogPointsMapFromClustererResult(clusters);
 
         if (args.length == 1 && (Objects.equals(args[0], "--console") || Objects.equals(args[0], "--server"))) {
-            // TODO : switch DI according to command line argument
-            IDriverClass applicationDriver = new Driver(new ConsoleInputServiceImpl(), new ConsoleOutputServiceImpl());
 
-            applicationDriver.start();
+            IDriverClass applicationDriver;
 
-        } else throw new ApplicationException(ApplicationExceptionCauseEnum.INVALID_ARGUMENTS);
+            switch (args[0]) {
+                case "--console" -> {
+                    applicationDriver = new Driver(new ConsoleInputServiceImpl(), new ConsoleOutputServiceImpl());
+                    applicationDriver.start();
+                }
+                case "--server" -> {
+                    applicationDriver = new Driver(new TailBashCommandInputServiceImpl(), new ConsoleOutputServiceImpl());
+                    applicationDriver.start();
+                }
+            }
 
+        }
+        else throw new ApplicationException(ApplicationExceptionCauseEnum.INVALID_ARGUMENTS);
     }
 
     private static List<ILogPoint> loadLogs()
@@ -85,7 +95,7 @@ public class Main {
 
         // the stream holding the file content
         if (inputStream == null) {
-            throw new ClusterPhaseRuntimeException(CoreExceptionCauseEnum.LOG_FILE_NOT_FOUND);
+            throw new CoreException(CoreExceptionCauseEnum.TRAIN_LOG_FILE_NOT_FOUND);
         } else {
             return inputStream;
         }

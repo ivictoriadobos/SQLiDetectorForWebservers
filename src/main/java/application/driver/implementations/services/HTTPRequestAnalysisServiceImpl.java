@@ -17,8 +17,6 @@ import core.interfaces.ILogPoint;
 import core.implementations.models.LogPoint;
 import core.interfaces.IParameterTypeClassifier;
 
-import java.util.Optional;
-
 public class HTTPRequestAnalysisServiceImpl implements IAnalysisService {
 
     private final ILogClassifier logClassifier;
@@ -40,7 +38,7 @@ public class HTTPRequestAnalysisServiceImpl implements IAnalysisService {
 
         LogLabelEnum logLabel =  logClassifier.classify(logPoint);
 
-        var accessTypeAnalysisResult = analysisShouldContinue(logLabel, aLog.getMethod());
+        var accessTypeAnalysisResult = classifyAccessType(logLabel, aLog.getMethod());
 
         if (accessTypeAnalysisResult.summary().get().equals(AnalysisResultEnum.INCONCLUSIVE))
         {
@@ -69,7 +67,7 @@ public class HTTPRequestAnalysisServiceImpl implements IAnalysisService {
 
     }
 
-    private SQLAnalysisReport analysisShouldContinue(LogLabelEnum aLogLabel, String aRequestMethod)
+    private SQLAnalysisReport classifyAccessType(LogLabelEnum aLogLabel, String aRequestMethod)
     {
         var result = new SQLAnalysisReport();
 

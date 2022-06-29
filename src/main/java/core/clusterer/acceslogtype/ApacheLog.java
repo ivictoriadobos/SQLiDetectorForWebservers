@@ -273,4 +273,5 @@ public class ApacheLog implements ILog {
     public String getTimeOfRequest() {
         return timeOfRequest;
     }
+
 }

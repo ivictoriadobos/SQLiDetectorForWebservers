@@ -19,4 +19,5 @@ public interface ILog {
     String getSrcIPAddress();
 
     String getTimeOfRequest();
+
 }
