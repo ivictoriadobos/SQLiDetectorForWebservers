@@ -2,5 +2,5 @@ package core.interfaces;
 
 public interface ICommandInQueryParamsOrHeadersFilter {
 
-    boolean doesContainCommandInQueryParamsOrHeaders(ILogPoint logPoint);
+    boolean doesContainCommandInQueryParamsOrHeaders(ILogPoint aLogPoint);
 }

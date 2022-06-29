@@ -22,11 +22,13 @@ public class Driver implements IDriverClass {
     @Override
     public void start() {
 
+        System.out.println("Starting the analysis.. ");
+
         while (true)
         {
             ILog newLog;
-            try {
 
+            try {
 
                 newLog = inputService.takeInput();
                 launchNewAnalysis(newLog);
@@ -34,10 +36,7 @@ public class Driver implements IDriverClass {
 
             catch (ApplicationException ignored)
             {
-                if (ignored.getExceptionCauseCode().equals(ApplicationExceptionCauseEnum.EXCEPTION_AR_PARSING_LOG))
-                {
-                    System.out.println("Could not parse log, ignoring it");
-                }
+
             }
         }
     }
@@ -56,33 +55,31 @@ public class Driver implements IDriverClass {
 
             IAnalysisReport analysisResult = analysisService.analyseLog(aLog);
 
-            if (analysisResult.equals(AnalysisResultEnum.SAFE))
-            {
-                System.out.println("Request seems to be safe, accepting it.");
-                return;
-            }
-
-            if ( analysisResult.summary().get().equals(AnalysisResultEnum.INCONCLUSIVE))
-            {
-                // further analysis needed
-                // classify if parameters that contain SQL commands expects such content
-
-                System.out.println("Request contains SQL commands, not sure if safe. Human intervention needed.");
-                System.out.println(analysisResult.fullDescription());
-                return;
-
-            }
-
-            if ( analysisResult.equals(AnalysisResultEnum.NOT_SAFE))
-            {
-                System.out.println("Request contains too many sql commands in order to be safe. Rejecting it.");
-                System.out.println(analysisResult.fullDescription());
-                return;
-            }
-
-
-
             outputService.outputAnalysis(analysisResult);
+
+            return;
+//
+//            if (analysisResult.analysisResult().get().equals(AnalysisResultEnum.SAFE))
+//            {
+//                return;
+//            }
+//
+//            if ( analysisResult.analysisResult().get().equals(AnalysisResultEnum.INCONCLUSIVE))
+//            {
+//
+//                System.out.println("Request contains SQL commands in body parameters, not sure if safe. Human intervention needed.");
+//                return;
+//
+//            }
+//
+//            if ( analysisResult.analysisResult().get().equals(AnalysisResultEnum.NOT_SAFE))
+//            {
+//                System.out.println("Request contains too many sql commands in body parameters in order to be safe. Rejecting it.");
+//                return;
+//            }
+//
+//
+//
 
             }).start();
     }

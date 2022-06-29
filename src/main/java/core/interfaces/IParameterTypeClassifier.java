@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface IParameterTypeClassifier {
 
-    IAnalysisReport classifyIfParametersExpectCommandsAsInput(List<IParameter> aListOfParameters);
+    IAnalysisReport classifyIfParametersExpectCommandsAsInput(ILogPoint aLogPointWithPossibleInfectedParameters);
 }

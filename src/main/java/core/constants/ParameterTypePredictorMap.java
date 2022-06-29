@@ -16,6 +16,12 @@ public class ParameterTypePredictorMap {
         put("birthday", ParameterClassTypeEnum.NSQL);
         put("year", ParameterClassTypeEnum.NSQL);
         put("age", ParameterClassTypeEnum.NSQL);
+        put("title", ParameterClassTypeEnum.NSQL);
+        put("comment", ParameterClassTypeEnum.NSQL);
+        put("date", ParameterClassTypeEnum.NSQL);
+        put("filter", ParameterClassTypeEnum.NSQL);
+        put("timestamp", ParameterClassTypeEnum.NSQL);
+        put("parameter", ParameterClassTypeEnum.NSQL);
 
 
         put("query", ParameterClassTypeEnum.SQL);

@@ -38,22 +38,26 @@ public class HTTPRequestAnalysisServiceImpl implements IAnalysisService {
 
         LogLabelEnum logLabel =  logClassifier.classify(logPoint);
 
-        var accessTypeAnalysisResult = classifyAccessType(logLabel, aLog.getMethod());
+        var accessTypeAnalysisResult = mapLogLabelToAccessType(logLabel, aLog);
 
-        if (accessTypeAnalysisResult.summary().get().equals(AnalysisResultEnum.INCONCLUSIVE))
+
+        if (accessTypeAnalysisResult.analysisResult().get().equals(AnalysisResultEnum.INCONCLUSIVE))
         {
             if (sqlInQueryOrHeadersFilter.doesContainCommandInQueryParamsOrHeaders(logPoint))
             {
+                accessTypeAnalysisResult.addStatement("Request contains SQL commands in query or headers");
                 accessTypeAnalysisResult.setAnalysisResult(AnalysisResultEnum.NOT_SAFE);
                 return accessTypeAnalysisResult;
             }
 
             if (logPoint.getInfectedParameters().isEmpty())
             {
-                throw new CoreException(CoreExceptionCauseEnum.INVALID_ANALYSIS_STATE);
+                System.out.println("INVALID STATE REACHED FOR: " + aLog.getLogAsString());
+                return accessTypeAnalysisResult;
+//                throw new CoreException(CoreExceptionCauseEnum.INVALID_ANALYSIS_STATE);
             }
 
-            return sqlParameterClassifier.classifyIfParametersExpectCommandsAsInput(logPoint.getInfectedParameters().get());
+            return sqlParameterClassifier.classifyIfParametersExpectCommandsAsInput(logPoint);
         }
 
         else return accessTypeAnalysisResult;
@@ -67,13 +71,15 @@ public class HTTPRequestAnalysisServiceImpl implements IAnalysisService {
 
     }
 
-    private SQLAnalysisReport classifyAccessType(LogLabelEnum aLogLabel, String aRequestMethod)
+    private SQLAnalysisReport mapLogLabelToAccessType(LogLabelEnum aLogLabel, ILog aLog)
     {
         var result = new SQLAnalysisReport();
+        result.addLogString(aLog.getLogAsString());
 
         if (aLogLabel.equals(LogLabelEnum.NORMAL_ACCESS))
         {
             result.setAnalysisResult(AnalysisResultEnum.SAFE);
+
         }
 
         else if ( aLogLabel.equals(LogLabelEnum.ATTACK))
@@ -83,19 +89,11 @@ public class HTTPRequestAnalysisServiceImpl implements IAnalysisService {
 
         else
         {
-            if ( aRequestMethod.equalsIgnoreCase("GET"))
-            {
-                result.setAnalysisResult(AnalysisResultEnum.NOT_SAFE);
-            }
-
-            else
-            {
-                result.setAnalysisResult(AnalysisResultEnum.INCONCLUSIVE);
-            }
+            result.setAnalysisResult(AnalysisResultEnum.INCONCLUSIVE);
         }
+
 
         return result;
 
-        // TODO fix the logic here
     }
 }

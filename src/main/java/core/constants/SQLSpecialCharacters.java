@@ -18,8 +18,8 @@ public class SQLSpecialCharacters {
 
         put("(\\(|\\)|\\s|\\d{3,})\\*(\\s|\\(|\\)|\\d)+", WeightClassEnum.MEDIUM); // *
 
-        put("'", WeightClassEnum.EXTRA_LOW);
-        put("\\\"", WeightClassEnum.EXTRA_LOW); // " -> \\ \" -> "
+        put("'", WeightClassEnum.LOW);
+        put("\\\"", WeightClassEnum.LOW); // " -> \\ \" -> "
     }};
 
     public static Map<String, WeightClassEnum> specialCharactersForUserAgent = new HashMap<>()

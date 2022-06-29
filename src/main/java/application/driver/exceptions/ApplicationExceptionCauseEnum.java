@@ -6,7 +6,7 @@ public enum ApplicationExceptionCauseEnum {
     NULL_INPUT("Tried to read a new log, got EOF."),
     EXCEPTION_AT_STARTING_BASH_COMMAND("Exception at launching tshark command as a process."),
     EXCEPTION_AT_READING_CONTINUOUS_INPUT_FROM_TSHARK("An unexpected exception occured when reading tshark output."),
-    EXCEPTION_AR_PARSING_LOG("Exception encountered at parsing a line to a Log object");
+    EXCEPTION_AT_PARSING_LOG("Exception encountered at parsing a line to a Log object");
 
     private final String errorMessage;
     ApplicationExceptionCauseEnum(String aMessage) {

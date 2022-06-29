@@ -20,4 +20,5 @@ public interface ILog {
 
     String getTimeOfRequest();
 
+    String getLogAsString();
 }

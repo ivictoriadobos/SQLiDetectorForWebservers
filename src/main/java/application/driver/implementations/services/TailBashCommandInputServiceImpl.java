@@ -36,7 +36,7 @@ public class TailBashCommandInputServiceImpl implements IInputService {
     @Override
     public ILog takeInput() {
 
-        System.out.println();
+//        System.out.println();
         String line;
 
         try {
@@ -45,7 +45,7 @@ public class TailBashCommandInputServiceImpl implements IInputService {
             throw new ApplicationException(ApplicationExceptionCauseEnum.EXCEPTION_AT_READING_CONTINUOUS_INPUT_FROM_TSHARK);
         }
 
-        System.out.println(line);
+//        System.out.println(line);
 
         return new Log(line);
 

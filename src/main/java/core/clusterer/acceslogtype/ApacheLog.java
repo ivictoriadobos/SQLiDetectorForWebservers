@@ -18,6 +18,8 @@ public class ApacheLog implements ILog {
     public int logIndexInFile = -1;
     private String clientIP;
 
+    private String logString;
+
     private String timeOfRequest;
 
     private String httpMethod;
@@ -176,14 +178,14 @@ public class ApacheLog implements ILog {
         target = value;
     }
 
-    @Field("HTTP.FIRSTLINE:request.firstline")
+    @Field("HTTP.QUERYSTRING:request.firstline.original.uri.query")
     public void setFirstline(final String value)
     {
         firstLine = value;
 
         firstLine = firstLine.toUpperCase();
 
-//        decode();
+        decode();
     }
 
     @Field("IP:connection.client.host")
@@ -274,4 +276,8 @@ public class ApacheLog implements ILog {
         return timeOfRequest;
     }
 
+    @Override
+    public String getLogAsString() {
+        return logString;
+    }
 }

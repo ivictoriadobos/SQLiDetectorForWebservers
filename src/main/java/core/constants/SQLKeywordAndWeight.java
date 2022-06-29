@@ -17,23 +17,26 @@ public class SQLKeywordAndWeight {
         put("(\\s|\\(|,)+EXTRACTVALUE\\(", WeightClassEnum.CRITICAL); // EXTRACTVALUE
         put("\\s+INFORMATION_SCHEMA.(PLUGINS|SCHEMATA|TABLES|INNODB_LOCKS|COLUMNS|SESSION_STATUS|USER_PRIVILEGES)+", WeightClassEnum.CRITICAL);
         put("\\s+TABLE_SCHEMA=", WeightClassEnum.CRITICAL);
+        put("(\\(|\\s|,|^|;)+UPDATEXML\\(", WeightClassEnum.CRITICAL); // UPDATEXML
+        put("(\\(|\\s|,|^|;)+UPDATEXML\\(", WeightClassEnum.CRITICAL); // UPDATEXML
 
         put("(\\s+|\\(|;|'|^)+\\bSELECT(\\s|\\()", WeightClassEnum.HIGH); // SELECT
-        put("(\\(|\\s|,|^|;)+UPDATEXML\\(", WeightClassEnum.HIGH); // UPDATEXML
+        put("(\\(|\\|\\|)CHR\\(", WeightClassEnum.HIGH); // CHR
+        put("\\bDROP\\s+(table|database)", WeightClassEnum.HIGH);
+        put("\\bNULL,NULL\\b", WeightClassEnum.HIGH);
+        put("(\\(|\\s)SLEEP(\\()", WeightClassEnum.HIGH);
+        put("\\sPG_SLEEP\\(", WeightClassEnum.HIGH);
 
         put("(\\b|\\(|\\s|N)CHAR(\\b|\\()", WeightClassEnum.MEDIUM); // CHAR
         put("(\\(|\\s)IFNULL(\\()", WeightClassEnum.MEDIUM); // IFNULL
         put("(\\s+|\\(|;|'|^)+\\bDELETE\\b", WeightClassEnum.MEDIUM); // DELETE
         put("\\bINSERT\\s+", WeightClassEnum.MEDIUM);
         put("\\sCOUNT\\(", WeightClassEnum.MEDIUM);
-        put("\\bDROP\\s+(table|database)", WeightClassEnum.MEDIUM);
-        put("(\\(|\\s)SLEEP(\\()", WeightClassEnum.MEDIUM);
         put("(\\s|\\()AND\\s+(\\(|'|\\\"|\\d{2,}=)", WeightClassEnum.MEDIUM);
         put("(\\s|\\()OR\\s+(\\(|'|\\\"|\\d{2,})", WeightClassEnum.MEDIUM);
         put("\\(CASE\\s", WeightClassEnum.MEDIUM);
-        put("(\\(|\\|\\|)CHR\\(", WeightClassEnum.MEDIUM); // CHR
+        put("\\sGROUP BY\\s", WeightClassEnum.MEDIUM);
 
-        put("\\sGROUP BY\\s", WeightClassEnum.LOW);
         put("\\bLIKE\\(", WeightClassEnum.LOW);
         put("\\bEND(|\\)|\\s|--)", WeightClassEnum.LOW);
         put("\\bWHERE\\b", WeightClassEnum.LOW);

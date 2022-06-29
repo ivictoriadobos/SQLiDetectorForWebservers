@@ -8,7 +8,6 @@ import core.exceptions.CoreException;
 import core.exceptions.CoreExceptionCauseEnum;
 import core.implementations.models.HTTPRequestParameter;
 import core.interfaces.IParameter;
-import org.apache.commons.math3.util.Pair;
 
 import java.util.*;
 
@@ -24,6 +23,8 @@ public class Log implements ILog {
 
     private String httpVersion;
 
+    private String logString;
+
     private List<IParameter> queryParameters;
 
     private List<IParameter> bodyParameters;
@@ -35,7 +36,7 @@ public class Log implements ILog {
 
         try {
 
-            System.out.println("Log to be parsed: " + aStringLog);
+            logString = aStringLog;
 
             List<String> logChunks = List.of(aStringLog.split("\\t"));
 
@@ -45,7 +46,7 @@ public class Log implements ILog {
 
         catch (Exception e)
         {
-            throw new ApplicationException(ApplicationExceptionCauseEnum.EXCEPTION_AR_PARSING_LOG);
+            throw new ApplicationException(ApplicationExceptionCauseEnum.EXCEPTION_AT_PARSING_LOG);
         }
 
     }
@@ -84,8 +85,6 @@ public class Log implements ILog {
 
 
         List<String> requestChunks = List.of(aStringLog.split("\\t"));
-
-//        requestTimestamp = ...
 
         ipSrcAddress = requestChunks.get(RequestPropertyIndex.IPSRCADDRESS.getIdx());
 
@@ -188,5 +187,10 @@ public class Log implements ILog {
     @Override
     public String getTimeOfRequest() {
         return requestTimestamp;
+    }
+
+    @Override
+    public String getLogAsString() {
+        return logString;
     }
 }

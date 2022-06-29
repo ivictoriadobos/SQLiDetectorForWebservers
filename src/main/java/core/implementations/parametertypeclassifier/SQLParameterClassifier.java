@@ -5,6 +5,7 @@ import application.driver.interfaces.IAnalysisReport;
 import core.constants.AnalysisResultEnum;
 import core.constants.ParameterClassTypeEnum;
 import core.constants.ParameterTypePredictorMap;
+import core.interfaces.ILogPoint;
 import core.interfaces.IParameter;
 import core.interfaces.IParameterTypeClassifier;
 import org.apache.commons.math3.util.Pair;
@@ -19,11 +20,11 @@ import java.util.stream.Collectors;
 public class SQLParameterClassifier implements IParameterTypeClassifier {
 
     @Override
-    public IAnalysisReport classifyIfParametersExpectCommandsAsInput(List<IParameter> aListOfParameters) {
+    public IAnalysisReport classifyIfParametersExpectCommandsAsInput(ILogPoint aLogPointWithPossibleInfectedParameters) {
 
         List<Pair<Double, IParameter>> parameterNameScore = new ArrayList<>();
 
-        aListOfParameters.forEach(parameter ->
+        aLogPointWithPossibleInfectedParameters.getInfectedParameters().get().forEach(parameter ->
         {
             double score = 100;
 
@@ -43,16 +44,11 @@ public class SQLParameterClassifier implements IParameterTypeClassifier {
             parameterNameScore.add(new Pair<>(score, parameter));
         });
 
-        // try get the html page?
-//        aListOfParameters.forEach( parameter ->
-//        {
-//
-//        });
-
         // collection of parameters that are infected (contain SQL commands) but as their name suggest this shouldn't be the case
         var nonSQLParameters = parameterNameScore.stream().filter(pair -> pair.getFirst() < 100).collect(Collectors.toList());
         var SQLParameters = parameterNameScore.stream().filter(pair -> pair.getFirst() > 100).collect(Collectors.toList());
         var report = new SQLAnalysisReport();
+        report.addLogString(aLogPointWithPossibleInfectedParameters.getLog().getLogAsString());
 
 
         if (nonSQLParameters.size() > 0 )
@@ -60,16 +56,19 @@ public class SQLParameterClassifier implements IParameterTypeClassifier {
             nonSQLParameters.forEach(scoreOfParameterPair ->
                     report.addInfectedParameter(scoreOfParameterPair.getValue()));
 
+            report.addStatement("Spotted body parameters that are nonsqlparameters with sql commands as content - marking request as NOT SAFE");
             report.setAnalysisResult(AnalysisResultEnum.NOT_SAFE);
         }
 
-        else if (SQLParameters.size() == aListOfParameters.size())
+        else if (SQLParameters.size() == aLogPointWithPossibleInfectedParameters.getInfectedParameters().get().size())
         {
+            report.addStatement("All apparently infected body parameters are sql parameters - marking request as SAFE");
             report.setAnalysisResult(AnalysisResultEnum.SAFE);
         }
 
         else
         {
+            report.addStatement("Couldn't decide if infected body parameters are either sqlparameters on nonsqlparameters - flag request");
             report.setAnalysisResult(AnalysisResultEnum.INCONCLUSIVE);
         }
 
