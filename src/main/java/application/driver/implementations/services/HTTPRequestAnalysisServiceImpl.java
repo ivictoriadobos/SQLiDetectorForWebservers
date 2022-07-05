@@ -7,8 +7,6 @@ import application.driver.interfaces.ILog;
 import core.clusterer.acceslogtype.distancescore.NormalizedLogScoreCalculator;
 import core.constants.AnalysisResultEnum;
 import core.constants.LogLabelEnum;
-import core.exceptions.CoreException;
-import core.exceptions.CoreExceptionCauseEnum;
 import core.implementations.SQLCommandInQueryParamsOrHeadersFilterer;
 import core.implementations.parametertypeclassifier.SQLParameterClassifier;
 import core.interfaces.ICommandInQueryParamsOrHeadersFilter;
@@ -40,7 +38,7 @@ public class HTTPRequestAnalysisServiceImpl implements IAnalysisService {
 
         var accessTypeAnalysisResult = mapLogLabelToAccessType(logLabel, aLog);
 
-
+        accessTypeAnalysisResult.addStatement("Attack score of log: " + logPoint.getPoint()[0]);
         if (accessTypeAnalysisResult.analysisResult().get().equals(AnalysisResultEnum.INCONCLUSIVE))
         {
             if (sqlInQueryOrHeadersFilter.doesContainCommandInQueryParamsOrHeaders(logPoint))
@@ -74,7 +72,7 @@ public class HTTPRequestAnalysisServiceImpl implements IAnalysisService {
     private SQLAnalysisReport mapLogLabelToAccessType(LogLabelEnum aLogLabel, ILog aLog)
     {
         var result = new SQLAnalysisReport();
-        result.addLogString(aLog.getLogAsString());
+        result.addLog(aLog);
 
         if (aLogLabel.equals(LogLabelEnum.NORMAL_ACCESS))
         {

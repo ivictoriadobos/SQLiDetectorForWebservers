@@ -14,12 +14,12 @@ public class LogPoint implements ILogPoint {
     private double[] logPoint;
 
     private List<IParameter> possibleInfectedBodyParametersMap;
-    private final NormalizedLogScoreCalculator scoreCalculator;
+    private final NormalizedLogScoreCalculator attackScoreCalculator;
     private LogLabelEnum logLabel;
 
     public LogPoint(ILog aLog, NormalizedLogScoreCalculator aScoreCalculator) {
         log = aLog;
-        scoreCalculator = aScoreCalculator;
+        attackScoreCalculator = aScoreCalculator;
 
         computePoint();
     }
@@ -62,7 +62,7 @@ public class LogPoint implements ILogPoint {
             trackPossibleInfectedBodyParameters();
         }
 
-        logPoint = new double[] { intermediaryRawScore, scoreCalculator.compute(intermediaryRawScore)};
+        logPoint = new double[] { intermediaryRawScore, attackScoreCalculator.compute(intermediaryRawScore)};
     }
 
     private void trackPossibleInfectedBodyParameters()

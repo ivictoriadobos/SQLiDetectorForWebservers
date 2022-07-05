@@ -24,7 +24,8 @@ public class ClassifiedLogPointsMapProvider {
 
         for (Cluster<ILogPoint> cluster : clusters)
         {
-
+            if ( idx > 2 )
+                idx = 2;
             labeledLogPointsMap.put(LogLabelEnum.labelOf(idx), cluster.getPoints());
 
             idx++;

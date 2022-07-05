@@ -1,6 +1,7 @@
 package application.driver.implementations.models;
 
 import application.driver.interfaces.IAnalysisReport;
+import application.driver.interfaces.ILog;
 import core.constants.AnalysisResultEnum;
 import core.exceptions.CoreException;
 import core.exceptions.CoreExceptionCauseEnum;
@@ -18,7 +19,7 @@ public class SQLAnalysisReport implements IAnalysisReport {
 
         private List<String> statements;
 
-        private String logString;
+        private ILog log;
 
     public SQLAnalysisReport() {
         infectedParameters = new ArrayList<>();
@@ -40,12 +41,30 @@ public class SQLAnalysisReport implements IAnalysisReport {
 
         StringBuilder stringBuilder = new StringBuilder();
 
-        stringBuilder.append("Request: " +  logString + "\n");
+        stringBuilder.append("Request: ").append(log.getLogAsString()).append("\n");
 
         statements.forEach(statement ->
         {
-            stringBuilder.append(statement + "\n");
+            stringBuilder.append(statement).append("\n");
         });
+
+        log.getBodyParameters().ifPresent(listOfParameters ->
+        {
+            stringBuilder.append("Body parameters: \n");
+            listOfParameters.forEach(bodyParameter ->
+            {
+                stringBuilder.append(bodyParameter.getName()).append(": ").append(bodyParameter.getValue()).append("\n");
+            });
+        });
+
+        if (!infectedParameters.isEmpty()) {
+            stringBuilder.append("Infected parameters: \n");
+
+            infectedParameters.forEach(parameter ->
+            {
+                stringBuilder.append(parameter.getName()).append(": ").append(parameter.getValue()).append("\n");
+            });
+        }
 
 //        stringBuilder.append("Analysis result: " + analysisResult.name());
         return stringBuilder.toString();
@@ -57,13 +76,13 @@ public class SQLAnalysisReport implements IAnalysisReport {
     }
 
     @Override
-    public void addLogString(String aLogString) {
-        if(logString != null && !logString.equals(aLogString))
+    public void addLog(ILog aLog) {
+        if(log != null)
         {
-            throw new CoreException(CoreExceptionCauseEnum.CANNOT_MODIFY_LOG_STRING_OF_ANALYSIS_REPORT);
+            throw new CoreException(CoreExceptionCauseEnum.CANNOT_MODIFY_LOG_OF_ANALYSIS_REPORT);
         }
 
-        logString = aLogString;
+        log = aLog;
     }
 
     public void setAnalysisResult(AnalysisResultEnum anAnalysisResult) {

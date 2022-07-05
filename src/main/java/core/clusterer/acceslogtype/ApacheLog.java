@@ -1,7 +1,7 @@
 package core.clusterer.acceslogtype;
 import application.driver.interfaces.ILog;
 import core.constants.SQLKeywordAndWeight;
-import core.constants.SQLSpecialCharacters;
+import core.constants.SQLSpecialCharactersAndWeight;
 import core.constants.WeightClassEnum;
 import core.implementations.models.HTTPRequestParameter;
 import core.interfaces.IParameter;
@@ -54,12 +54,12 @@ public class ApacheLog implements ILog {
     {
         double specialCharactersKeywordsScore = 0;
 
-        for (Map.Entry<String, WeightClassEnum> mapEntry : SQLSpecialCharacters.specialCharacters.entrySet()) {
+        for (Map.Entry<String, WeightClassEnum> mapEntry : SQLSpecialCharactersAndWeight.specialCharacters.entrySet()) {
 
             specialCharactersKeywordsScore+= regexMatchSequenceOverRequestUri(mapEntry.getKey()) * mapEntry.getValue().getValue();
         }
 
-        for (Map.Entry<String, WeightClassEnum> mapEntry : SQLSpecialCharacters.specialCharactersForUserAgent.entrySet()) {
+        for (Map.Entry<String, WeightClassEnum> mapEntry : SQLSpecialCharactersAndWeight.restrictedSpecialCharacters.entrySet()) {
 
             specialCharactersKeywordsScore+= regexMatchSequenceOverUserAgent(mapEntry.getKey()) * mapEntry.getValue().getValue();
         }
@@ -82,11 +82,11 @@ public class ApacheLog implements ILog {
 
     public int getNumberOfSpecialCharacters()
     {
-        return SQLSpecialCharacters.specialCharacters.keySet().stream()
+        return SQLSpecialCharactersAndWeight.specialCharacters.keySet().stream()
                 .mapToInt(this::regexMatchSequenceOverRequestUri)
                 .sum() +
 
-                SQLSpecialCharacters.specialCharactersForUserAgent.keySet().stream()
+                SQLSpecialCharactersAndWeight.restrictedSpecialCharacters.keySet().stream()
                 .mapToInt(this::regexMatchSequenceOverUserAgent)
                 .sum();
     }

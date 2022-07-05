@@ -10,7 +10,7 @@ public enum CoreExceptionCauseEnum {
     INVALID_PARAMETER_VALUE("Parameter value is invalid."),
     INVALID_ANALYSIS_STATE("The analysis resulted in a invalid state."),
     METHOD_NOT_SUPPORTED("The request's method is not supported."),
-    CANNOT_MODIFY_LOG_STRING_OF_ANALYSIS_REPORT("You're trying to modify a string log of an analysis report that's already set in place. Why?");
+    CANNOT_MODIFY_LOG_OF_ANALYSIS_REPORT("You're trying to modify a string log of an analysis report that's already set in place. Why?");
 
     private final String errorMessage;
     CoreExceptionCauseEnum(String anErrorMessage) {

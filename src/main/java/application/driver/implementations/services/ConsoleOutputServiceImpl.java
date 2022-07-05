@@ -8,16 +8,17 @@ public class ConsoleOutputServiceImpl implements IOutputService {
     @Override
     public void outputAnalysis(IAnalysisReport aReport) {
 
-        String backgroundColor = "";
+        String textColor = "";
 
         switch (aReport.analysisResult().get())
         {
-            case SAFE -> backgroundColor = ANSIColors.ANSI_GREEN;
-            case INCONCLUSIVE -> backgroundColor = ANSIColors.ANSI_YELLOW;
-            case NOT_SAFE -> backgroundColor = ANSIColors.ANSI_RED;
+            case SAFE -> textColor = ANSIColors.ANSI_GREEN;
+            case INCONCLUSIVE -> textColor = ANSIColors.ANSI_YELLOW;
+            case NOT_SAFE -> textColor = ANSIColors.ANSI_RED;
         }
 
-        System.out.println("\n" + aReport.fullDescription() +backgroundColor + "Analysis result: " + aReport.analysisResult().get().name() + ANSIColors.ANSI_RESET);
+//        System.out.println("alo politia");
+        System.out.println("\n" + aReport.fullDescription() +textColor + "Analysis result: " + aReport.analysisResult().get().name() + ANSIColors.ANSI_RESET);
 
     }
 }

@@ -1,7 +1,7 @@
 package core.implementations.models;
 
 import core.constants.SQLKeywordAndWeight;
-import core.constants.SQLSpecialCharacters;
+import core.constants.SQLSpecialCharactersAndWeight;
 import core.constants.WeightClassEnum;
 import core.exceptions.CoreException;
 import core.exceptions.CoreExceptionCauseEnum;
@@ -40,18 +40,18 @@ public class HTTPRequestParameter implements IParameter {
 
         for (Map.Entry<String, WeightClassEnum> entry : SQLKeywordAndWeight.keywordsAndWeight.entrySet()) {
 
-            Pattern regexPattern = Pattern.compile(entry.getKey());
+            Pattern regexPattern = Pattern.compile(entry.getKey(), Pattern.CASE_INSENSITIVE);
             Matcher matcher = regexPattern.matcher(value);
 
             score += matcher.results().count() * entry.getValue().getValue();
         }
 
         Map<String, WeightClassEnum> specialCharactersMap;
-        if (name.equals("User-Agent"))
+        if (name.equalsIgnoreCase("User-Agent") || name.equalsIgnoreCase("sec-ch-ua") || name.equalsIgnoreCase("Cookie"))
         {
-            specialCharactersMap = SQLSpecialCharacters.specialCharactersForUserAgent;
+            specialCharactersMap = SQLSpecialCharactersAndWeight.restrictedSpecialCharacters;
         }
-        else specialCharactersMap = SQLSpecialCharacters.specialCharacters;
+        else specialCharactersMap = SQLSpecialCharactersAndWeight.specialCharacters;
 
         for (Map.Entry<String, WeightClassEnum> entry : specialCharactersMap.entrySet())
         {

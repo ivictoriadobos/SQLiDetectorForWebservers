@@ -48,7 +48,7 @@ public class SQLParameterClassifier implements IParameterTypeClassifier {
         var nonSQLParameters = parameterNameScore.stream().filter(pair -> pair.getFirst() < 100).collect(Collectors.toList());
         var SQLParameters = parameterNameScore.stream().filter(pair -> pair.getFirst() > 100).collect(Collectors.toList());
         var report = new SQLAnalysisReport();
-        report.addLogString(aLogPointWithPossibleInfectedParameters.getLog().getLogAsString());
+        report.addLog(aLogPointWithPossibleInfectedParameters.getLog());
 
 
         if (nonSQLParameters.size() > 0 )

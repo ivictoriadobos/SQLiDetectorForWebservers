@@ -12,5 +12,5 @@ public interface IAnalysisReport {
 
     public void addStatement(String aStatement);
 
-    public void addLogString(String aLogString);
+    public void addLog(ILog aLogString);
 }

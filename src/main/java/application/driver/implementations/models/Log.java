@@ -121,8 +121,10 @@ public class Log implements ILog {
 
         headers = new ArrayList<>();
 
-        headerPairs.forEach(headerPair ->
-                headers.add(new HTTPRequestParameter(headerPair.split(": ")[0].trim(), headerPair.split(": ")[1].trim())) );
+        headerPairs.forEach(headerPair -> {
+
+                headers.add(new HTTPRequestParameter(headerPair.split(": ")[0].trim(), headerPair.split(": ")[1].trim()));
+        });
 
     }
 

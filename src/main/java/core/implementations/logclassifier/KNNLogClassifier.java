@@ -35,11 +35,22 @@ public class KNNLogClassifier implements ILogClassifier {
                     classesRank.add(new Pair<>(logLabel, ponderedDistanceForLabel));
                 });
 
-        classesRank.sort((o1, o2) -> (int) (o2.getValue() - o1.getValue()));
+
+
+        var normal_access_pondered_distance = classesRank.get(0);
+        var possible_attack_access_pondered_distance = classesRank.get(1);
+        var attack_access_pondered_distance = classesRank.get(2);
+
+        var myList = List.of(normal_access_pondered_distance, possible_attack_access_pondered_distance, attack_access_pondered_distance);
+
+        myList.stream().sorted().toList().get(2);
+
+// nu intoarce bine clasa aici.
+        var closestComputedClass = classesRank.stream().max((o1, o2) -> (int) (o2.getValue() - o1.getValue()));
+//        classesRank.sort((o1, o2) -> (int) (o2.getValue() - o1.getValue()));
 
         try {
-
-            return classesRank.get(0).getKey();
+            return closestComputedClass.get().getKey();
         }
 
         catch (Exception e) {

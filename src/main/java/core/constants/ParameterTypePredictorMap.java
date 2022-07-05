@@ -22,6 +22,8 @@ public class ParameterTypePredictorMap {
         put("filter", ParameterClassTypeEnum.NSQL);
         put("timestamp", ParameterClassTypeEnum.NSQL);
         put("parameter", ParameterClassTypeEnum.NSQL);
+        put("firstname", ParameterClassTypeEnum.NSQL);
+        put("name", ParameterClassTypeEnum.NSQL);
 
 
         put("query", ParameterClassTypeEnum.SQL);

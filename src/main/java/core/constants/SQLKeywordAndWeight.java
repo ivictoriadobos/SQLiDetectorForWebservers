@@ -13,14 +13,19 @@ public class SQLKeywordAndWeight {
         put("\\sRLIKE(\\s|\\(|')+", WeightClassEnum.CRITICAL); // RLIKE
         put("(\\s|^)+MAKE_SET\\(", WeightClassEnum.CRITICAL); // MAKE_SET
         put("(\\s|\\(|^)+ELT\\(", WeightClassEnum.CRITICAL); // ELT
+        put("ALTER TABLE ", WeightClassEnum.CRITICAL);
+        put("PRIMARY KEY\\b", WeightClassEnum.CRITICAL);
         put("(,|\\s|\\(|=)+CONCAT\\(", WeightClassEnum.CRITICAL); // CONCAT
         put("(\\s|\\(|,)+EXTRACTVALUE\\(", WeightClassEnum.CRITICAL); // EXTRACTVALUE
         put("\\s+INFORMATION_SCHEMA.(PLUGINS|SCHEMATA|TABLES|INNODB_LOCKS|COLUMNS|SESSION_STATUS|USER_PRIVILEGES)+", WeightClassEnum.CRITICAL);
         put("\\s+TABLE_SCHEMA=", WeightClassEnum.CRITICAL);
         put("(\\(|\\s|,|^|;)+UPDATEXML\\(", WeightClassEnum.CRITICAL); // UPDATEXML
-        put("(\\(|\\s|,|^|;)+UPDATEXML\\(", WeightClassEnum.CRITICAL); // UPDATEXML
-
-        put("(\\s+|\\(|;|'|^)+\\bSELECT(\\s|\\()", WeightClassEnum.HIGH); // SELECT
+        put("SELECT \\* FROM", WeightClassEnum.CRITICAL);
+        put(" values\\s*\\(", WeightClassEnum.CRITICAL);
+        put("(\\s+|\\(|;|'|^)+\\bSELECT(\\s|\\()", WeightClassEnum.CRITICAL); // SELECT
+        put("insert into \\S* values\\s*\\(", WeightClassEnum.CRITICAL);
+        put("\\S* values\\s*\\(", WeightClassEnum.CRITICAL);
+        put("\\b('|\\\")\\)* ORDER BY", WeightClassEnum.CRITICAL);
         put("(\\(|\\|\\|)CHR\\(", WeightClassEnum.HIGH); // CHR
         put("\\bDROP\\s+(table|database)", WeightClassEnum.HIGH);
         put("\\bNULL,NULL\\b", WeightClassEnum.HIGH);
