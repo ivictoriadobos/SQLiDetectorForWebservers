@@ -7,16 +7,29 @@ import application.driver.interfaces.*;
 import core.clusterer.acceslogtype.EuclideanDistanceMeasure;
 import core.constants.AnalysisResultEnum;
 import core.implementations.logclassifier.KNNLogClassifier;
+import core.interfaces.ILogClassifier;
+import org.apache.commons.math3.ml.distance.DistanceMeasure;
 
 public class Driver implements IDriverClass {
 
     private final IInputService inputService;
 
+    private final IAnalysisService analysisService;
+
+    private final DistanceMeasure distanceMeasure;
+
+    private final ILogClassifier logClassifier;
+
     private final IOutputService outputService;
 
-    public Driver(IInputService inputService, IOutputService outputService) {
-        this.inputService = inputService;
-        this.outputService = outputService;
+    public Driver(IInputService anInputService, IOutputService anOutputService) {
+        inputService = anInputService;
+        outputService = anOutputService;
+
+        distanceMeasure = new EuclideanDistanceMeasure();
+        logClassifier = new KNNLogClassifier(5, distanceMeasure);
+
+        analysisService = new HTTPRequestAnalysisServiceImpl(logClassifier);
     }
 
     @Override
@@ -50,36 +63,9 @@ public class Driver implements IDriverClass {
     {
         new Thread(() -> {
 
-
-            IAnalysisService analysisService = new HTTPRequestAnalysisServiceImpl(new KNNLogClassifier(5, new EuclideanDistanceMeasure()));
-
             IAnalysisReport analysisResult = analysisService.analyseLog(aLog);
 
             outputService.outputAnalysis(analysisResult);
-
-            return;
-//
-//            if (analysisResult.analysisResult().get().equals(AnalysisResultEnum.SAFE))
-//            {
-//                return;
-//            }
-//
-//            if ( analysisResult.analysisResult().get().equals(AnalysisResultEnum.INCONCLUSIVE))
-//            {
-//
-//                System.out.println("Request contains SQL commands in body parameters, not sure if safe. Human intervention needed.");
-//                return;
-//
-//            }
-//
-//            if ( analysisResult.analysisResult().get().equals(AnalysisResultEnum.NOT_SAFE))
-//            {
-//                System.out.println("Request contains too many sql commands in body parameters in order to be safe. Rejecting it.");
-//                return;
-//            }
-//
-//
-//
 
             }).start();
     }
