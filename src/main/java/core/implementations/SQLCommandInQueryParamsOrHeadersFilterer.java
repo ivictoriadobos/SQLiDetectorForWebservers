@@ -16,12 +16,12 @@ public class SQLCommandInQueryParamsOrHeadersFilterer implements ICommandInQuery
         var queryParameters = aLogPoint.getLog().getQueryParameters();
 
         for (IParameter header : headers) {
-            score += header.getIntermediaryPartialRawScore();
+            score += header.getRawAttackScore();
         }
 
         for ( IParameter queryParam : queryParameters)
         {
-            score += queryParam.getIntermediaryPartialRawScore();
+            score += queryParam.getRawAttackScore();
         }
 
         if ( score >= ClusterScoreThreshold.POSSIBLE_ATTACK_LOWER_THRESHOLD.getValue())

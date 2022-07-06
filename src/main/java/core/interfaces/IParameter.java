@@ -6,5 +6,5 @@ public interface IParameter {
 
     String getValue();
 
-    Double getIntermediaryPartialRawScore();
+    Double getRawAttackScore();
 }

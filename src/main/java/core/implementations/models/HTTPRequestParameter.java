@@ -34,7 +34,7 @@ public class HTTPRequestParameter implements IParameter {
     }
 
     @Override
-    public Double getIntermediaryPartialRawScore() {
+    public Double getRawAttackScore() {
 
         var score = 0.0;
 

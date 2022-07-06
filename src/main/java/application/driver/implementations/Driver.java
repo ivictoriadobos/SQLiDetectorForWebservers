@@ -13,29 +13,21 @@ import org.apache.commons.math3.ml.distance.DistanceMeasure;
 public class Driver implements IDriverClass {
 
     private final IInputService inputService;
-
-    private final IAnalysisService analysisService;
-
-    private final DistanceMeasure distanceMeasure;
-
-    private final ILogClassifier logClassifier;
-
     private final IOutputService outputService;
 
     public Driver(IInputService anInputService, IOutputService anOutputService) {
         inputService = anInputService;
         outputService = anOutputService;
-
-        distanceMeasure = new EuclideanDistanceMeasure();
-        logClassifier = new KNNLogClassifier(5, distanceMeasure);
-
-        analysisService = new HTTPRequestAnalysisServiceImpl(logClassifier);
     }
 
     @Override
     public void start() {
 
         System.out.println("Starting the analysis.. ");
+        //noinspection InfiniteLoopStatement
+
+
+
 
         while (true)
         {
@@ -62,6 +54,8 @@ public class Driver implements IDriverClass {
     private void launchNewAnalysis(ILog aLog)
     {
         new Thread(() -> {
+
+            IAnalysisService analysisService = new HTTPRequestAnalysisServiceImpl(new KNNLogClassifier(5, new EuclideanDistanceMeasure()));
 
             IAnalysisReport analysisResult = analysisService.analyseLog(aLog);
 

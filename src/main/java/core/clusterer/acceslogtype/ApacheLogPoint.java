@@ -45,11 +45,6 @@ public class ApacheLogPoint implements ILogPoint {
         return logPoint;
     }
 
-    public double getIntermediaryScore()
-    {
-        return weightedSumOfSQLKeywordsInPayload + weightedSumOfSpecialCharacters;
-    }
-
     @Override
     public ILog getLog() {
         return apacheLog;

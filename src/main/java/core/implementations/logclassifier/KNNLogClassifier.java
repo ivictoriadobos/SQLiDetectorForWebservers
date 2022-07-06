@@ -10,6 +10,7 @@ import org.apache.commons.math3.ml.distance.DistanceMeasure;
 import org.apache.commons.math3.util.Pair;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class KNNLogClassifier implements ILogClassifier {
     private final int n;
@@ -35,22 +36,21 @@ public class KNNLogClassifier implements ILogClassifier {
                     classesRank.add(new Pair<>(logLabel, ponderedDistanceForLabel));
                 });
 
+        classesRank.sort((o1, o2) -> (int)(o2.getValue() - o1.getValue()));
+        classesRank.sort((o1, o2) -> (int)(o2.getValue() - o1.getValue()));
+        classesRank.sort((o1, o2) -> (int)(o2.getValue() - o1.getValue()));
 
+        var closestClass = new Pair<LogLabelEnum, Double>(LogLabelEnum.ATTACK, (double) 0);
 
-        var normal_access_pondered_distance = classesRank.get(0);
-        var possible_attack_access_pondered_distance = classesRank.get(1);
-        var attack_access_pondered_distance = classesRank.get(2);
+        for (var cls : classesRank)
+        {
+            if (cls.getValue() > closestClass.getValue())
+                closestClass = cls;
+        }
 
-        var myList = List.of(normal_access_pondered_distance, possible_attack_access_pondered_distance, attack_access_pondered_distance);
-
-        myList.stream().sorted().toList().get(2);
-
-// nu intoarce bine clasa aici.
-        var closestComputedClass = classesRank.stream().max((o1, o2) -> (int) (o2.getValue() - o1.getValue()));
-//        classesRank.sort((o1, o2) -> (int) (o2.getValue() - o1.getValue()));
 
         try {
-            return closestComputedClass.get().getKey();
+            return closestClass.getKey();
         }
 
         catch (Exception e) {

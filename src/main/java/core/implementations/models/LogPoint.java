@@ -20,8 +20,6 @@ public class LogPoint implements ILogPoint {
     public LogPoint(ILog aLog, NormalizedLogScoreCalculator aScoreCalculator) {
         log = aLog;
         attackScoreCalculator = aScoreCalculator;
-
-        computePoint();
     }
 
     private double computeIntermediaryRawScoreOfList(List<IParameter> aParameterList) {
@@ -30,7 +28,7 @@ public class LogPoint implements ILogPoint {
 
         for (IParameter parameter : aParameterList) {
 
-            sqlKeywordsScore += parameter.getIntermediaryPartialRawScore();
+            sqlKeywordsScore += parameter.getRawAttackScore();
         }
 
         return sqlKeywordsScore;
@@ -38,6 +36,9 @@ public class LogPoint implements ILogPoint {
 
     @Override
     public double[] getPoint() {
+        if (logPoint == null)
+            computePoint();
+
         return logPoint;
     }
 
@@ -72,7 +73,7 @@ public class LogPoint implements ILogPoint {
         log.getBodyParameters().get().forEach( parameter ->
         {
 
-            if ( parameter.getIntermediaryPartialRawScore() >= ClusterScoreThreshold.POSSIBLE_ATTACK_LOWER_THRESHOLD.getValue())
+            if ( parameter.getRawAttackScore() >= ClusterScoreThreshold.POSSIBLE_ATTACK_LOWER_THRESHOLD.getValue())
             {
                 possibleInfectedBodyParametersMap.add(parameter);
             }
